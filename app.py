@@ -5,7 +5,8 @@ from logger import logger
 from llm import generate_response
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+# Allow all origins with more explicit CORS settings
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/api/generate-speech', methods=['POST'])
 def generate_speech():

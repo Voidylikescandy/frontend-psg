@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/common/Header';
 import CandidateProfile from './pages/CandidateProfile';
 import SpeechParameters from './pages/SpeechParameters';
+import SpeechEdit from './pages/SpeechEdit';
 import DataVisualization from './pages/DataVisualization';
 
 // Create a theme
@@ -39,6 +40,7 @@ function App() {
           <Routes>
             <Route path="/" element={<CandidateProfile />} />
             <Route path="/speech-parameters" element={<SpeechParameters />} />
+            <Route path="/speech-edit" element={<SpeechEdit />} />
             <Route path="/data-visualization" element={<DataVisualization />} />
           </Routes>
         </div>

@@ -23,107 +23,30 @@ import {
   CardContent,
   Tooltip
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextFileIcon from '@mui/icons-material/Description';
 import PdfIcon from '@mui/icons-material/PictureAsPdf';
 import JsonIcon from '@mui/icons-material/Code';
+import EditIcon from '@mui/icons-material/Edit';
 import { jsPDF } from 'jspdf';
 import { generateSpeech } from '../utils/api';
-import TextAreaWithWordLimit from '../components/forms/TextAreaWithWordLimit';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
-
-// Speech type options for dropdown
-const SPEECH_TYPE_OPTIONS = [
-  { value: 'Election Rally Speech', label: 'Election Rally Speech' },
-  { value: 'Manifesto Launch Speech', label: 'Manifesto Launch Speech' },
-  { value: 'Independence Day Address', label: 'Independence Day Address' },
-  { value: 'Republic Day Address', label: 'Republic Day Address' },
-  { value: 'Constituency Development Speech', label: 'Constituency Development Speech' },
-  { value: 'Farmer Outreach Speech', label: 'Farmer Outreach Speech' },
-  { value: 'Minority Community Speech', label: 'Minority Community Speech' },
-  { value: 'Regional Festival Speech', label: 'Regional Festival Speech' },
-  { value: 'Campaign Momentum Speech', label: 'Campaign Momentum Speech' },
-  { value: 'Women Empowerment Speech', label: 'Women Empowerment Speech' },
-  { value: 'Post-Election Gratitude Speech', label: 'Post-Election Gratitude Speech' },
-];
-
-// Campaign stage options for dropdown
-const CAMPAIGN_STAGE_OPTIONS = [
-  { value: 'Early Campaign', label: 'Early Campaign' },
-  { value: 'Mid-Campaign', label: 'Mid-Campaign' },
-  { value: 'Final Days', label: 'Final Days' },
-  { value: 'Election Day', label: 'Election Day' },
-  { value: 'Post-Election', label: 'Post-Election' },
-];
-
-// Call-to-action options for dropdown
-const CALL_TO_ACTION_OPTIONS = [
-  { value: 'Vote', label: 'Vote' },
-  { value: 'Donate', label: 'Donate' },
-  { value: 'Volunteer', label: 'Volunteer' },
-  { value: 'Spread the Message', label: 'Spread the Message' },
-  { value: 'Attend Event', label: 'Attend Event' },
-  { value: 'Contact Official', label: 'Contact Official' },
-  { value: 'Register to Vote', label: 'Register to Vote' },
-  { value: 'Join Movement', label: 'Join Movement' },
-  { value: 'Sign Petition', label: 'Sign Petition' },
-  { value: 'Multiple Actions', label: 'Multiple Actions' },
-];
-
-// Speech tone options for dropdown
-const SPEECH_TONE_OPTIONS = [
-  { value: 'Hopeful', label: 'Hopeful' },
-  { value: 'Serious', label: 'Serious' },
-  { value: 'Urgent', label: 'Urgent' },
-  { value: 'Celebratory', label: 'Celebratory' },
-  { value: 'Inspirational', label: 'Inspirational' },
-  { value: 'Combative', label: 'Combative' },
-  { value: 'Conciliatory', label: 'Conciliatory' },
-  { value: 'Patriotic', label: 'Patriotic' },
-  { value: 'Empathetic', label: 'Empathetic' },
-  { value: 'Confident', label: 'Confident' },
-];
-
-// Formality options for dropdown
-const FORMALITY_OPTIONS = [
-  { value: 'Formal', label: 'Formal' },
-  { value: 'Semi-Formal', label: 'Semi-Formal' },
-  { value: 'Conversational', label: 'Conversational' },
-  { value: 'Informal', label: 'Informal' },
-];
-
-// Rhetorical devices options for multi-select
-const RHETORICAL_DEVICES_OPTIONS = [
-  { value: 'Anaphora', label: 'Anaphora (repetition at beginning of sentences)' },
-  { value: 'Metaphor', label: 'Metaphor (symbolic comparisons)' },
-  { value: 'Antithesis', label: 'Antithesis (contrasting ideas)' },
-  { value: 'Rhetorical Question', label: 'Rhetorical Question' },
-  { value: 'Alliteration', label: 'Alliteration (repeated consonant sounds)' },
-  { value: 'Parallelism', label: 'Parallelism (repeated grammatical structures)' },
-  { value: 'Tricolon', label: 'Tricolon (series of three)' },
-  { value: 'Personification', label: 'Personification' },
-  { value: 'Hyperbole', label: 'Hyperbole (exaggeration)' },
-  { value: 'Climax', label: 'Climax (ascending importance)' },
-];
-
-// Mapping from speech type to default primary objective
-const PRIMARY_OBJECTIVE_MAP = {
-  'Election Rally Speech': 'Energize the voter base and convince undecided voters to support the candidate through powerful messaging on key issues.',
-  'Manifesto Launch Speech': 'Present the party manifesto and key policy initiatives in a clear and compelling manner to establish the campaign agenda.',
-  'Independence Day Address': 'Celebrate national unity and progress while reflecting on challenges and outlining future vision.',
-  'Republic Day Address': 'Honor constitutional values and democratic principles while highlighting governance achievements.',
-  'Constituency Development Speech': 'Highlight development projects completed and planned for the constituency to demonstrate effective representation.',
-  'Farmer Outreach Speech': 'Address agricultural concerns and present policies that will benefit farmers and rural communities.',
-  'Minority Community Speech': 'Address specific concerns of minority communities and demonstrate commitment to inclusive governance.',
-  'Regional Festival Speech': 'Connect cultural values with political messaging while celebrating regional identity and traditions.',
-  'Campaign Momentum Speech': 'Maintain campaign energy and enthusiasm in the final stretch before election day.',
-  'Women Empowerment Speech': 'Highlight issues affecting women and present policies aimed at improving gender equality and women\'s welfare.',
-  'Post-Election Gratitude Speech': 'Express gratitude to voters and supporters while outlining plans to fulfill campaign promises.',
-};
+import AISuggestionTextBox from '../components/forms/AISuggestionTextBox';
+import {
+  SPEECH_TYPE_OPTIONS,
+  CAMPAIGN_STAGE_OPTIONS,
+  CALL_TO_ACTION_OPTIONS,
+  SPEECH_TONE_OPTIONS,
+  FORMALITY_OPTIONS,
+  RHETORICAL_DEVICES_OPTIONS,
+  PRIMARY_OBJECTIVE_MAP
+} from '../utils/constants';
 
 const SpeechParameters = () => {
+  const navigate = useNavigate();
   const [candidateProfile, setCandidateProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [speech, setSpeech] = useState('');
@@ -315,18 +238,19 @@ const SpeechParameters = () => {
       // Call the API to generate a speech
       const response = await generateSpeech(requestData);
       
-      if (response.status === 'success') {
-        setSpeech(response.speech);
-        setSpeechResponse({
-          speech: response.speech,
-          key_themes: response.key_themes || [],
-          sentiment: response.sentiment || { category: '', explanation: '' }
-        });
-      } else {
-        setError(response.error || 'Failed to generate speech');
-      }
+      setSpeech(response.speech);
+      setSpeechResponse({
+        speech: response.speech,
+        key_themes: response.key_themes || [],
+        sentiment: response.sentiment || { category: '', explanation: '' }
+      });
     } catch (err) {
-      setError('Failed to connect to the server. Please try again.');
+      // Handle backend errors
+      if (err.error && err.message) {
+        setError(`${err.error}: ${err.message}`);
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -381,10 +305,52 @@ const SpeechParameters = () => {
     
     // Split the text into lines that fit the page width
     const speechText = speechResponse.speech;
-    const lines = doc.splitTextToSize(speechText, 170);
+    const lines = doc.splitTextToSize(speechText, 175); // Slightly wider text area
     
-    // Add the text to the PDF starting at position (20, 60)
-    doc.text(lines, 20, 55);
+    // Define page dimensions and parameters for optimal text placement
+    const startY = 55; // Starting Y position on first page (after metadata)
+    const lineHeight = 5.5; // Further reduce line height to fit more text
+    const pageHeight = doc.internal.pageSize.height;
+    const pageMarginBottom = 12; // Reduced bottom margin
+    
+    // Calculate usable page heights
+    const usableFirstPageHeight = pageHeight - startY - pageMarginBottom;
+    const usableOtherPagesHeight = pageHeight - 15 - pageMarginBottom; // Reduced top margin for other pages
+    
+    // Calculate how many lines can fit on each page type (using at least 95% of available space)
+    const maxLinesOnFirstPage = Math.floor(usableFirstPageHeight / lineHeight);
+    const maxLinesOnOtherPages = Math.floor(usableOtherPagesHeight / lineHeight);
+    
+    // Add text to the PDF with improved pagination
+    let currentPage = 1;
+    let currentLine = 0;
+    let currentPosition = startY;
+    
+    while (currentLine < lines.length) {
+      // Determine how many lines to put on this page (at least 95% capacity unless not enough lines left)
+      const linesRemaining = lines.length - currentLine;
+      const maxLinesThisPage = currentPage === 1 ? maxLinesOnFirstPage : maxLinesOnOtherPages;
+      
+      // Use at least 95% of available space unless we don't have enough content
+      const minimumLines = Math.floor(maxLinesThisPage * 0.95);
+      const linesOnThisPage = linesRemaining <= maxLinesThisPage ? 
+        linesRemaining : 
+        Math.max(minimumLines, Math.min(maxLinesThisPage, linesRemaining));
+      
+      // Add the text chunk for this page
+      const pageContent = lines.slice(currentLine, currentLine + linesOnThisPage);
+      doc.text(pageContent, 20, currentPosition);
+      
+      // Move to next chunk of lines
+      currentLine += linesOnThisPage;
+      
+      // If more content remains, add a new page
+      if (currentLine < lines.length) {
+        doc.addPage();
+        currentPage++;
+        currentPosition = 15; // Reduced top margin for subsequent pages
+      }
+    }
     
     // Add page numbers
     const pageCount = doc.internal.getNumberOfPages();
@@ -437,6 +403,15 @@ const SpeechParameters = () => {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+  };
+
+  // Navigate to edit page with current speech data
+  const handleEditSpeech = () => {
+    // Save the current speech data to sessionStorage for the edit page
+    sessionStorage.setItem('editSpeechData', JSON.stringify(speechResponse));
+    
+    // Navigate to the edit page
+    navigate('/speech-edit');
   };
 
   return (
@@ -493,17 +468,16 @@ const SpeechParameters = () => {
                   The main goal of your speech. This is auto-filled based on the selected speech type, but you can customize it.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="primary-objective"
                 label="Primary Objective"
                 value={speechParams['primary-objective']}
                 onChange={handleSpeechParamChange('primary-objective')}
                 placeholder="What is the main purpose of this speech?"
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
                 required
+                contextInfo="The primary objective is the main goal your speech aims to achieve. It will guide the overall structure and messaging of your speech. This field is auto-filled based on the speech type you selected, but you can modify or enhance it."
+                systemPrompt="You are an expert speech writer helping to define a clear primary objective for a political speech. Based on the speech type and context, craft a compelling primary objective that will guide the speech's development."
               />
             </Grid>
 
@@ -514,16 +488,15 @@ const SpeechParameters = () => {
                   Additional goals or purposes for your speech.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="secondary-objective"
                 label="Secondary Objective"
                 value={speechParams['secondary-objective']}
                 onChange={handleSpeechParamChange('secondary-objective')}
                 placeholder="What else would you like to accomplish with this speech?"
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="Secondary objectives are additional goals your speech should accomplish beyond the primary purpose. These can include building rapport with the audience, addressing specific concerns, or setting the stage for future messaging."
+                systemPrompt="You are a strategic political communications expert. Based on the provided context, suggest effective secondary objectives that complement the primary goal of the speech and add depth to its purpose."
               />
             </Grid>
           </Grid>
@@ -548,14 +521,15 @@ const SpeechParameters = () => {
                   Enter a short, memorable slogan that captures the essence of your campaign.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="slogan"
                 label="Campaign Slogan"
                 value={speechParams['slogan']}
                 onChange={handleSpeechParamChange('slogan')}
                 placeholder="e.g., Building a Brighter Tomorrow Together"
-                fullWidth
-                margin="normal"
+                rows={1}
+                contextInfo="A campaign slogan is a short, memorable phrase that captures the essence of your campaign message and is easily repeatable. It should reflect your core values and vision."
+                systemPrompt="You are a political campaign messaging expert specializing in creating memorable slogans. Create a short, impactful slogan that captures the essence of the campaign based on the provided information. Keep it under 8 words, memorable, and aligned with the candidate's party and values."
               />
             </Grid>
 
@@ -566,15 +540,16 @@ const SpeechParameters = () => {
                   Describe your central campaign theme and vision for the future (maximum 300 words).
                 </Typography>
               </Box>
-              <TextAreaWithWordLimit
+              <AISuggestionTextBox
                 id="main-message"
                 label="Main Message/Vision"
                 value={speechParams['main-message']}
                 onChange={handleSpeechParamChange('main-message')}
                 placeholder="Outline the desired future state and central theme you want to convey..."
-                maxWords={300}
                 rows={3}
                 required
+                contextInfo="The main message or vision is the central theme of your campaign. It should articulate your vision for the future and what you stand for in a compelling way."
+                systemPrompt="You are a visionary political strategist. Craft a compelling main message or vision statement that articulates the candidate's vision for the future. Keep it inspirational, forward-looking, and aligned with the candidate's party values. Focus on what sets this vision apart from opponents."
               />
             </Grid>
 
@@ -603,16 +578,15 @@ const SpeechParameters = () => {
                   >
                     <ListItemText 
                       primary={
-                        <TextField
+                        <AISuggestionTextBox
                           id={`policy-point-${index}`}
                           label={`Policy Point ${index + 1}`}
                           value={point}
                           onChange={handlePolicyPointChange(index)}
                           placeholder={`Enter policy point ${index + 1}`}
-                          fullWidth
-                          margin="dense"
-                          multiline
                           rows={2}
+                          contextInfo="Policy points are specific proposals or positions that form the substance of your speech. Each point should be clear, relevant to your audience, and aligned with your overall message."
+                          systemPrompt="You are a policy expert helping to craft clear, compelling policy points for a political speech. Create a specific, actionable policy point that aligns with the candidate's platform and addresses voter concerns. Focus on one issue and make it concise yet substantive."
                         />
                       } 
                     />
@@ -645,23 +619,23 @@ const SpeechParameters = () => {
           </Typography>
 
           <Grid container spacing={2}>
-            {/* Key Messages */}
+            {/* Key Messages - Using the new AI Suggestion component */}
             <Grid item xs={12}>
               <Box mb={1}>
                 <Typography variant="body2" color="textSecondary">
-                  Outline the key messages you want to convey in your speech. These will form the backbone of your content.
+                  The central messages that should be emphasized throughout the speech. These can include policy priorities, values, or vision statements.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="key-messages"
                 label="Key Messages"
                 value={speechParams['key-messages']}
                 onChange={handleSpeechParamChange('key-messages')}
-                placeholder="e.g., Economic prosperity, National unity, Educational reforms..."
-                fullWidth
-                multiline
+                placeholder="Enter the main messages that should be emphasized in the speech..."
+                required
                 rows={3}
-                margin="normal"
+                contextInfo="This information will be used for speech generation. Key messages include the main elements of your speech that you want the audience to remember. Generate key messages based on the political context, candidate profile, and campaign objectives."
+                systemPrompt="You are an expert political speech writer helping to craft persuasive key messages. Keep responses concise, impactful and aligned with the candidate's political party and positions."
               />
             </Grid>
 
@@ -684,16 +658,15 @@ const SpeechParameters = () => {
                   Share a personal experience or story that relates to the speech's theme.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="personal-story"
                 label="Personal Story"
                 value={speechParams['personal-story']}
                 onChange={handleSpeechParamChange('personal-story')}
                 placeholder="Describe a personal experience that illustrates your message..."
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="A personal story is a narrative from the candidate's own life that illustrates a key point in the speech. Effective personal stories create emotional connections and humanize the candidate."
+                systemPrompt="You are a political speechwriter specializing in narrative. Craft a compelling personal story that illustrates the candidate's connection to the speech theme. The story should be authentic-sounding, relatable, and emotionally resonant while reinforcing key campaign messages."
               />
             </Grid>
 
@@ -704,16 +677,15 @@ const SpeechParameters = () => {
                   Include a short, amusing or interesting story about a real incident or person.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="anecdote"
                 label="Anecdote"
                 value={speechParams['anecdote']}
                 onChange={handleSpeechParamChange('anecdote')}
                 placeholder="Share a relevant anecdote that supports your message..."
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="An anecdote is a short, interesting story about a real incident or person that helps illustrate a point in your speech. Unlike personal stories, anecdotes can be about others or historical events."
+                systemPrompt="You are a storytelling expert for political speeches. Create a brief, engaging anecdote (about someone other than the candidate) that effectively illustrates a key point of the speech. The anecdote should be memorable and clearly connect to the message."
               />
             </Grid>
 
@@ -724,16 +696,15 @@ const SpeechParameters = () => {
                   Describe a hypothetical scenario that illustrates your point or vision.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="hypothetical-scenario"
                 label="Hypothetical Scenario"
                 value={speechParams['hypothetical-scenario']}
                 onChange={handleSpeechParamChange('hypothetical-scenario')}
                 placeholder="Paint a picture of what could be possible or what might happen..."
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="A hypothetical scenario is an imagined situation that helps audiences visualize either a positive future that could result from your policies or negative outcomes that might occur without them."
+                systemPrompt="You are a creative political communicator. Develop a vivid hypothetical scenario that helps the audience visualize either the benefits of the candidate's proposals or the consequences of inaction. Make it realistic, specific, and emotionally engaging."
               />
             </Grid>
 
@@ -781,16 +752,15 @@ const SpeechParameters = () => {
                   Provide specific instructions for your call to action.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="cta-instructions"
                 label="Specific Instructions"
                 value={speechParams['cta-instructions']}
                 onChange={handleSpeechParamChange('cta-instructions')}
                 placeholder="e.g., Visit our website at www.example.com to sign up as a volunteer"
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="Call to action instructions provide specific, actionable guidance for your audience on how to respond to your speech. This should include clear steps, relevant contact information, or specific dates/locations."
+                systemPrompt="You are a campaign engagement specialist. Create clear, specific instructions for the audience to follow through on the selected call to action. Include concrete details (like websites, dates, locations) that make it easy for listeners to take the desired action immediately after the speech."
               />
             </Grid>
           </Grid>
@@ -972,16 +942,15 @@ const SpeechParameters = () => {
                   Describe the current political landscape and climate that might influence the speech.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="political-climate"
                 label="Current Political Climate"
                 value={speechParams['political-climate']}
                 onChange={handleSpeechParamChange('political-climate')}
                 placeholder="e.g., Polarized electorate, Recent government controversies, Rising economic concerns..."
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="The current political climate describes the prevailing political conditions, public sentiment, and key issues that form the backdrop for your speech. This helps tailor content to current realities."
+                systemPrompt="You are a political analyst specializing in current affairs. Provide a concise assessment of the current political climate that would be relevant to this speech. Focus on major trends, voter sentiments, and contextual factors that should influence the speech's messaging and tone."
               />
             </Grid>
 
@@ -992,16 +961,15 @@ const SpeechParameters = () => {
                   Mention any recent events or developments that should be referenced in the speech.
                 </Typography>
               </Box>
-              <TextField
+              <AISuggestionTextBox
                 id="recent-events"
                 label="Recent Events"
                 value={speechParams['recent-events']}
                 onChange={handleSpeechParamChange('recent-events')}
                 placeholder="e.g., Recent policy announcement, Natural disaster, International event..."
-                fullWidth
-                multiline
                 rows={2}
-                margin="normal"
+                contextInfo="Recent events are specific occurrences that should be addressed in your speech to make it timely and relevant. These can include legislation, news events, or local developments."
+                systemPrompt="You are a political communications advisor tracking current events. Suggest specific recent events or developments that would be important to reference in this speech. Include a mix of political, economic, social, or local events that would resonate with the target audience and connect to the speech's themes."
               />
             </Grid>
 
@@ -1106,6 +1074,18 @@ const SpeechParameters = () => {
                   <Typography variant="body1" component="div" sx={{ whiteSpace: 'pre-line' }}>
                     {speechResponse.speech}
                   </Typography>
+                  
+                  {/* Add Edit Speech Button */}
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-start' }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<EditIcon />}
+                      onClick={handleEditSpeech}
+                    >
+                      Edit Speech
+                    </Button>
+                  </Box>
                 </Paper>
               </Grid>
               

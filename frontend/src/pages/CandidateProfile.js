@@ -11,57 +11,22 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  TextField
+  MenuItem
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TextInput from '../components/forms/TextInput';
 import TextAreaWithWordLimit from '../components/forms/TextAreaWithWordLimit';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
-
-// Options for key strengths/expertise dropdown
-const EXPERTISE_OPTIONS = [
-  { value: 'Education', label: 'Education' },
-  { value: 'Healthcare', label: 'Healthcare' },
-  { value: 'Economy', label: 'Economy' },
-  { value: 'Environment', label: 'Environment' },
-  { value: 'National Security', label: 'National Security' },
-  { value: 'Foreign Policy', label: 'Foreign Policy' },
-  { value: 'Technology', label: 'Technology' },
-  { value: 'Social Justice', label: 'Social Justice' },
-  { value: 'Infrastructure', label: 'Infrastructure' },
-  { value: 'Housing', label: 'Housing' },
-  { value: 'Agriculture', label: 'Agriculture' },
-  { value: 'Energy', label: 'Energy' },
-];
-
-// Options for education level dropdown
-const EDUCATION_LEVEL_OPTIONS = [
-  { value: 'Primary Education', label: 'Primary Education' },
-  { value: 'High School', label: 'High School' },
-  { value: 'Undergraduate', label: 'Undergraduate' },
-  { value: 'Graduate (Master\'s)', label: 'Graduate (Master\'s)' },
-  { value: 'Post-Graduate (PhD)', label: 'Post-Graduate (PhD)' },
-  { value: 'Professional Degree', label: 'Professional Degree' },
-  { value: 'Mixed Education Levels', label: 'Mixed Education Levels' },
-];
-
-// Options for political affiliation
-const POLITICAL_AFFILIATION_OPTIONS = [
-  { value: 'Leftist', label: 'Leftist' },
-  { value: 'Center-Left', label: 'Center-Left' },
-  { value: 'Centrist', label: 'Centrist' },
-  { value: 'Center-Right', label: 'Center-Right' },
-  { value: 'Rightist', label: 'Rightist' },
-  { value: 'Mixed/Various', label: 'Mixed/Various' },
-];
-
-// Options for political affiliation strength
-const AFFILIATION_STRENGTH_OPTIONS = [
-  { value: 'Strong', label: 'Strong' },
-  { value: 'Moderate', label: 'Moderate' },
-  { value: 'Weak', label: 'Weak' },
-];
+import AISuggestionTextBox from '../components/forms/AISuggestionTextBox';
+import { 
+  EXPERTISE_OPTIONS, 
+  EDUCATION_LEVEL_OPTIONS,
+  POLITICAL_AFFILIATION_OPTIONS,
+  AFFILIATION_STRENGTH_OPTIONS,
+  POLITICAL_PARTY_OPTIONS,
+  CANDIDATES_BY_PARTY,
+  CANDIDATE_OFFICE_MAPPING
+} from '../utils/constants';
 
 const CandidateProfile = () => {
   const navigate = useNavigate();
@@ -70,6 +35,7 @@ const CandidateProfile = () => {
   const [candidateForm, setCandidateForm] = useState({
     'candidate-name': '',
     'political-party': '',
+    'other-party': '', // For custom party name when 'other' is selected
     'office-sought': '',
     'brief-bio': '',
     'key-strengths': [],
@@ -89,6 +55,40 @@ const CandidateProfile = () => {
     setCandidateForm({
       ...candidateForm,
       [field]: event.target.value,
+    });
+  };
+
+  // Handle political party change
+  const handlePartyChange = (event) => {
+    const selectedParty = event.target.value;
+    
+    // Reset candidate name and office sought when party changes
+    let updates = {
+      'political-party': selectedParty,
+      'candidate-name': '',
+      'office-sought': '',
+    };
+    
+    // If other is selected, clear the candidate name
+    if (selectedParty === 'other') {
+      updates['other-party'] = '';
+    }
+    
+    setCandidateForm({
+      ...candidateForm,
+      ...updates
+    });
+  };
+
+  // Handle candidate name change
+  const handleCandidateChange = (event) => {
+    const selectedCandidate = event.target.value;
+    
+    // Update candidate name and set the office-sought based on mapping
+    setCandidateForm({
+      ...candidateForm,
+      'candidate-name': selectedCandidate,
+      'office-sought': CANDIDATE_OFFICE_MAPPING[selectedCandidate] || '',
     });
   };
 
@@ -126,9 +126,15 @@ const CandidateProfile = () => {
         : candidateForm['key-strengths'],
     };
     
-    // Remove the individual political affiliation fields before sending
+    // Set the actual political-party value from other-party if 'other' is selected
+    if (formattedForm['political-party'] === 'other' && formattedForm['other-party']) {
+      formattedForm['political-party'] = formattedForm['other-party'];
+    }
+    
+    // Remove the individual political affiliation fields and other-party before sending
     delete formattedForm['political-affiliation-type'];
     delete formattedForm['political-affiliation-strength'];
+    delete formattedForm['other-party'];
     
     // Save data to session storage for persistence between pages
     sessionStorage.setItem('candidateProfile', JSON.stringify(formattedForm));
@@ -136,6 +142,14 @@ const CandidateProfile = () => {
     // Navigate to speech parameters page
     navigate('/speech-parameters');
   };
+
+  // Check if 'other' party is selected
+  const isOtherPartySelected = candidateForm['political-party'] === 'other';
+  
+  // Get available candidates based on selected party
+  const availableCandidates = candidateForm['political-party'] && !isOtherPartySelected 
+    ? CANDIDATES_BY_PARTY[candidateForm['political-party']] || []
+    : [];
 
   return (
     <>
@@ -150,35 +164,89 @@ const CandidateProfile = () => {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={2}>
+          {/* Political Party Dropdown */}
           <Grid item xs={12} md={6}>
             <Box mb={1}>
               <Typography variant="body2" color="textSecondary">
-                Enter the full name of the candidate who will be delivering the speech.
+                Select the political party the candidate represents.
               </Typography>
             </Box>
-            <TextInput
-              id="candidate-name"
-              label="Name"
-              value={candidateForm['candidate-name']}
-              onChange={handleChange('candidate-name')}
-              placeholder="Enter candidate's full name"
-              required
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="political-party-label">Political Party</InputLabel>
+              <Select
+                labelId="political-party-label"
+                id="political-party"
+                value={candidateForm['political-party']}
+                label="Political Party"
+                onChange={handlePartyChange}
+              >
+                {POLITICAL_PARTY_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
+          
+          {/* Other Party Text Field (shown only when 'other' is selected) */}
+          {isOtherPartySelected && (
+            <Grid item xs={12} md={6}>
+              <Box mb={1}>
+                <Typography variant="body2" color="textSecondary">
+                  Enter the name of the political party.
+                </Typography>
+              </Box>
+              <TextInput
+                id="other-party"
+                label="Party Name"
+                value={candidateForm['other-party']}
+                onChange={handleChange('other-party')}
+                placeholder="Enter political party name"
+                required
+              />
+            </Grid>
+          )}
+          
+          {/* Candidate Name (dropdown or text field based on selection) */}
           <Grid item xs={12} md={6}>
             <Box mb={1}>
               <Typography variant="body2" color="textSecondary">
-                Specify the political party the candidate represents, if applicable.
+                {!isOtherPartySelected && candidateForm['political-party'] 
+                  ? "Select the candidate from the list" 
+                  : "Enter the full name of the candidate"}
               </Typography>
             </Box>
-            <TextInput
-              id="political-party"
-              label="Political Party (if applicable)"
-              value={candidateForm['political-party']}
-              onChange={handleChange('political-party')}
-              placeholder="e.g., Bharatiya Janata Party, Indian National Congress, etc."
-            />
+            {!isOtherPartySelected && candidateForm['political-party'] && availableCandidates.length > 0 ? (
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="candidate-name-label">Candidate Name</InputLabel>
+                <Select
+                  labelId="candidate-name-label"
+                  id="candidate-name"
+                  value={candidateForm['candidate-name']}
+                  label="Candidate Name"
+                  onChange={handleCandidateChange}
+                  required
+                >
+                  {availableCandidates.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <TextInput
+                id="candidate-name"
+                label="Name"
+                value={candidateForm['candidate-name']}
+                onChange={handleChange('candidate-name')}
+                placeholder="Enter candidate's full name"
+                required
+              />
+            )}
           </Grid>
+          
           <Grid item xs={12}>
             <Box mb={1}>
               <Typography variant="body2" color="textSecondary">
@@ -381,16 +449,15 @@ const CandidateProfile = () => {
                 List the main concerns and issues that matter most to your audience. Separate multiple concerns with commas.
               </Typography>
             </Box>
-            <TextField
+            <AISuggestionTextBox
               id="primary-concerns"
               label="Primary Concerns/Needs"
               value={candidateForm['primary-concerns']}
               onChange={handleChange('primary-concerns')}
               placeholder="e.g., Job security, Healthcare costs, Education quality, Climate change"
-              fullWidth
-              multiline
               rows={2}
-              margin="normal"
+              contextInfo="Primary concerns/needs are the key issues that matter most to your target audience. These will help tailor the speech to address specific problems and interests of the voters."
+              systemPrompt="You are a political strategist helping to identify key voter concerns for a political speech. Provide a concise list of relevant issues based on the information provided, separated by commas."
             />
           </Grid>
 
@@ -401,16 +468,15 @@ const CandidateProfile = () => {
                 Describe the core values and beliefs held by your audience. Separate multiple values with commas.
               </Typography>
             </Box>
-            <TextField
+            <AISuggestionTextBox
               id="existing-values"
               label="Existing Values/Beliefs"
               value={candidateForm['existing-values']}
               onChange={handleChange('existing-values')}
               placeholder="e.g., Family values, Individual liberty, Community welfare, Environmental stewardship"
-              fullWidth
-              multiline
               rows={2}
-              margin="normal"
+              contextInfo="Existing values/beliefs are the core principles that your target audience strongly identifies with. Understanding these values helps create speeches that resonate with their worldview."
+              systemPrompt="You are a political analyst specializing in voter values and beliefs. Generate a concise list of core values that would be important to the described audience, separated by commas."
             />
           </Grid>
         </Grid>

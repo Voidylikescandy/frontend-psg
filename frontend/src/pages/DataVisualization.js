@@ -29,18 +29,10 @@ import * as XLSX from 'xlsx';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import html2canvas from 'html2canvas';
+import { VISUALIZATION_OPTIONS } from '../utils/constants';
 
 // Register Chart.js components
 Chart.register(...registerables);
-
-// Visualization type options
-const VISUALIZATION_OPTIONS = [
-  { value: 'bar', label: 'Bar Chart' },
-  { value: 'line', label: 'Line Graph' },
-  { value: 'pie', label: 'Pie Chart' },
-  { value: 'doughnut', label: 'Doughnut Chart' },
-  { value: 'polarArea', label: 'Polar Area Chart' },
-];
 
 const DataVisualization = () => {
   // Reference to the chart container for export

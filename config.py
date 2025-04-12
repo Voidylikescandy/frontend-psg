@@ -63,15 +63,15 @@ SYSTEMPROMPT = """
 
     ### Step 2: Structure the Speech
     Create a speech with the following structure:
-    1. **Powerful Opening**: Begin with a greeting appropriate to the cultural context, followed by a
+    1. Powerful Opening: Begin with a greeting appropriate to the cultural context, followed by a
     compelling statement that captures attention.
-    2. **Introduction**: Briefly introduce the candidate and establish credibility.
-    3. **Vision Statement**: Clearly articulate the candidate's vision using the main message.
-    4. **Policy Points**: Address 3-5 key policy areas from the "policy-points" and "primary-concerns"
+    2. Introduction: Briefly introduce the candidate and establish credibility.
+    3. Vision Statement: Clearly articulate the candidate's vision using the main message.
+    4. Policy Points: Address 3-5 key policy areas from the "policy-points" and "primary-concerns"
     fields.
-    5. **Personal Connection**: Include a personal story or connection that humanizes the candidate.
-    6. **Addressing Challenges**: Acknowledge challenges and present solutions.
-    7. **Call to Action**: End with a strong call to action based on the "cta-instructions" field.
+    5. Personal Connection: Include a personal story or connection that humanizes the candidate.
+    6. Addressing Challenges: Acknowledge challenges and present solutions.
+    7. Call to Action: End with a strong call to action based on the "cta-instructions" field.
 
     ### Step 3: Apply the Appropriate Style and Tone
     - Match the speech tone to the specified "speech-tone" (authoritative, conversational,
@@ -102,13 +102,13 @@ SYSTEMPROMPT = """
 
     ## Examples of Effective Speech Elements
 
-    - **Powerful opening**: "My fellow citizens, today we stand at the crossroads of our nation's
+    - Powerful opening: "My fellow citizens, today we stand at the crossroads of our nation's
     future..."
-    - **Personal connection**: "Like many of you, I grew up in a family that valued hard work and
+    - Personal connection: "Like many of you, I grew up in a family that valued hard work and
     sacrifice..."
-    - **Policy introduction**: "Let me share with you three commitments I make to every citizen of this
+    - Policy introduction: "Let me share with you three commitments I make to every citizen of this
     district..."
-    - **Effective call to action**: "On [election date], you have the power to choose a path of security
+    - Effective call to action: "On [election date], you have the power to choose a path of security
     and prosperity..."
 
     ## Final Output
@@ -117,9 +117,9 @@ SYSTEMPROMPT = """
     - Be the appropriate length for the specified time
     - Authentically represent the candidate's voice and values
     - Address the primary and secondary objectives
-    - Do not create hypothetical stories, use just the given context and user parameters
     - Include natural transitions between sections
     - End with the specified call to action
+    - Speech should be structured with proper paragraphs and line breaks. Use only '\n' or '\n\n', do not use escape characters to denote them, for example, don't use '\\n' or '\\n\\n'.
 
     Before finalizing, review the speech to ensure it aligns with all the specified parameters and would
     resonate with the target demographic.

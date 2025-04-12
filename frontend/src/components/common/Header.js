@@ -29,6 +29,14 @@ const Header = () => {
           <Button 
             color="inherit" 
             component={RouterLink} 
+            to="/speech-edit"
+            sx={{ mr: 2 }}
+          >
+            Edit Speech
+          </Button>
+          <Button 
+            color="inherit" 
+            component={RouterLink} 
             to="/data-visualization"
           >
             Data Visualization
