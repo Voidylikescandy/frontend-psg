@@ -21,7 +21,9 @@ import {
   Chip,
   Card,
   CardContent,
-  Tooltip
+  Tooltip,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
@@ -31,6 +33,7 @@ import TextFileIcon from '@mui/icons-material/Description';
 import PdfIcon from '@mui/icons-material/PictureAsPdf';
 import JsonIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
+import InfoIcon from '@mui/icons-material/Info';
 import { jsPDF } from 'jspdf';
 import { generateSpeech } from '../utils/api';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
@@ -42,7 +45,8 @@ import {
   SPEECH_TONE_OPTIONS,
   FORMALITY_OPTIONS,
   RHETORICAL_DEVICES_OPTIONS,
-  PRIMARY_OBJECTIVE_MAP
+  PRIMARY_OBJECTIVE_MAP,
+  TEST_SPEECH
 } from '../utils/constants';
 
 const SpeechParameters = () => {
@@ -51,6 +55,12 @@ const SpeechParameters = () => {
   const [loading, setLoading] = useState(false);
   const [speech, setSpeech] = useState('');
   const [error, setError] = useState('');
+  
+  // Add state for RAG checkbox
+  const [enableRAG, setEnableRAG] = useState(true);
+  
+  // Add state for test speech checkbox
+  const [useTestSpeech, setUseTestSpeech] = useState(false);
   
   // State for speech parameters
   const [speechParams, setSpeechParams] = useState({
@@ -223,6 +233,18 @@ const SpeechParameters = () => {
       setLoading(true);
       setError('');
       
+      // If test speech is enabled, return the test speech without calling the API
+      if (useTestSpeech) {
+        setSpeech(TEST_SPEECH.speech);
+        setSpeechResponse({
+          speech: TEST_SPEECH.speech,
+          key_themes: TEST_SPEECH.key_themes || [],
+          sentiment: TEST_SPEECH.sentiment || { category: '', explanation: '' }
+        });
+        setLoading(false);
+        return;
+      }
+      
       // Combine candidate profile and speech parameters
       const requestData = {
         ...candidateProfile,
@@ -232,7 +254,9 @@ const SpeechParameters = () => {
         // Format story elements
         'story-elements': formatStoryElements(),
         // Format rhetorical devices
-        'rhetorical-devices': formatRhetoricalDevices(speechParams['rhetorical-devices'])
+        'rhetorical-devices': formatRhetoricalDevices(speechParams['rhetorical-devices']),
+        // Add enable_rag parameter
+        'enable_rag': enableRAG
       };
       
       // Call the API to generate a speech
@@ -1027,6 +1051,40 @@ const SpeechParameters = () => {
               When you click the button below, our AI will generate a custom political speech tailored to your specifications.
             </Typography>
           </Box>
+          
+          {/* Add RAG toggle checkbox and Test Speech checkbox */}
+          <Box mb={2} display="flex" justifyContent="center" alignItems="center" gap={2}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={enableRAG}
+                  onChange={(e) => setEnableRAG(e.target.checked)}
+                />
+              }
+              label="Enable RAG (Retrieval-Augmented Generation)"
+            />
+            <Tooltip title="When enabled, the system will search for relevant information about the candidate and political party to enhance the speech generation.">
+              <IconButton size="small">
+                <InfoIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={useTestSpeech}
+                  onChange={(e) => setUseTestSpeech(e.target.checked)}
+                />
+              }
+              label="Use Test Speech"
+            />
+            <Tooltip title="When enabled, a pre-defined test speech will be returned instead of generating a new one. Useful for testing when the backend is not available.">
+              <IconButton size="small">
+                <InfoIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          
           <Box display="flex" justifyContent="center">
             <Button 
               variant="contained" 
