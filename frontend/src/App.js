@@ -6,6 +6,7 @@ import Header from './components/common/Header';
 import CandidateProfile from './pages/CandidateProfile';
 import SpeechParameters from './pages/SpeechParameters';
 import SpeechEdit from './pages/SpeechEdit';
+import SpeechAnalysis from './pages/SpeechAnalysis';
 import DataVisualization from './pages/DataVisualization';
 
 // Create a theme
@@ -41,6 +42,7 @@ function App() {
             <Route path="/" element={<CandidateProfile />} />
             <Route path="/speech-parameters" element={<SpeechParameters />} />
             <Route path="/speech-edit" element={<SpeechEdit />} />
+            <Route path="/speech-analysis" element={<SpeechAnalysis />} />
             <Route path="/data-visualization" element={<DataVisualization />} />
           </Routes>
         </div>

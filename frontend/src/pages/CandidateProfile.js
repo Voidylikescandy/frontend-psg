@@ -25,7 +25,8 @@ import {
   AFFILIATION_STRENGTH_OPTIONS,
   POLITICAL_PARTY_OPTIONS,
   CANDIDATES_BY_PARTY,
-  CANDIDATE_OFFICE_MAPPING
+  CANDIDATE_OFFICE_MAPPING,
+  CANDIDATE_BIO_MAPPING
 } from '../utils/constants';
 
 const CandidateProfile = () => {
@@ -89,6 +90,7 @@ const CandidateProfile = () => {
       ...candidateForm,
       'candidate-name': selectedCandidate,
       'office-sought': CANDIDATE_OFFICE_MAPPING[selectedCandidate] || '',
+      'brief-bio': CANDIDATE_BIO_MAPPING[selectedCandidate] || '', // Auto-fill bio if available
     });
   };
 

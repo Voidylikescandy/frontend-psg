@@ -37,6 +37,14 @@ const Header = () => {
           <Button 
             color="inherit" 
             component={RouterLink} 
+            to="/speech-analysis"
+            sx={{ mr: 2 }}
+          >
+            Speech Analysis
+          </Button>
+          <Button 
+            color="inherit" 
+            component={RouterLink} 
             to="/data-visualization"
           >
             Data Visualization

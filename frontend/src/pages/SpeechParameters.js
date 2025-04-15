@@ -34,6 +34,7 @@ import PdfIcon from '@mui/icons-material/PictureAsPdf';
 import JsonIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { jsPDF } from 'jspdf';
 import { generateSpeech } from '../utils/api';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
@@ -65,6 +66,7 @@ const SpeechParameters = () => {
   // State for speech parameters
   const [speechParams, setSpeechParams] = useState({
     'speech-type': '',
+    'other-speech-type': '', // For custom speech type when 'other' is selected
     'primary-objective': '',
     'secondary-objective': '',
     'slogan': '',
@@ -167,10 +169,25 @@ const SpeechParameters = () => {
   // Handle speech type selection and auto-fill primary objective
   const handleSpeechTypeChange = (event) => {
     const selectedType = event.target.value;
+    
+    let updates = {
+      'speech-type': selectedType
+    };
+    
+    // If a predefined speech type is selected, set the primary objective
+    if (selectedType !== 'other') {
+      updates['primary-objective'] = PRIMARY_OBJECTIVE_MAP[selectedType] || '';
+    }
+    
+    // If other is selected, clear the other-speech-type field
+    if (selectedType === 'other') {
+      updates['other-speech-type'] = '';
+      updates['primary-objective'] = '';
+    }
+    
     setSpeechParams({
       ...speechParams,
-      'speech-type': selectedType,
-      'primary-objective': PRIMARY_OBJECTIVE_MAP[selectedType] || '',
+      ...updates
     });
   };
 
@@ -258,6 +275,14 @@ const SpeechParameters = () => {
         // Add enable_rag parameter
         'enable_rag': enableRAG
       };
+      
+      // Set the actual speech-type value from other-speech-type if 'other' is selected
+      if (requestData['speech-type'] === 'other' && requestData['other-speech-type']) {
+        requestData['speech-type'] = requestData['other-speech-type'];
+      }
+      
+      // Remove the other-speech-type before sending
+      delete requestData['other-speech-type'];
       
       // Call the API to generate a speech
       const response = await generateSpeech(requestData);
@@ -438,6 +463,15 @@ const SpeechParameters = () => {
     navigate('/speech-edit');
   };
 
+  // Navigate to analysis page with current speech data
+  const handleAnalyseSpeech = () => {
+    // Save the current speech data to sessionStorage for the analysis page
+    sessionStorage.setItem('analysisSpeechData', JSON.stringify(speechResponse));
+    
+    // Navigate to the analysis page
+    navigate('/speech-analysis');
+  };
+
   return (
     <>
       <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
@@ -484,6 +518,26 @@ const SpeechParameters = () => {
                 </Select>
               </FormControl>
             </Grid>
+
+            {/* Other Speech Type Text Field (shown only when 'other' is selected) */}
+            {speechParams['speech-type'] === 'other' && (
+              <Grid item xs={12}>
+                <Box mb={1}>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2.7 }}>
+                    Enter the type of speech you want to generate.
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  id="other-speech-type"
+                  label="Custom Speech Type"
+                  value={speechParams['other-speech-type']}
+                  onChange={handleSpeechParamChange('other-speech-type')}
+                  placeholder="e.g., Thanksgiving Address, University Commencement, etc."
+                  required
+                />
+              </Grid>
+            )}
 
             {/* Primary Objective */}
             <Grid item xs={12}>
@@ -1133,8 +1187,8 @@ const SpeechParameters = () => {
                     {speechResponse.speech}
                   </Typography>
                   
-                  {/* Add Edit Speech Button */}
-                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-start' }}>
+                  {/* Add Edit and Analyse Speech Buttons */}
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -1142,6 +1196,14 @@ const SpeechParameters = () => {
                       onClick={handleEditSpeech}
                     >
                       Edit Speech
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<AssessmentIcon />}
+                      onClick={handleAnalyseSpeech}
+                    >
+                      Analyse Speech
                     </Button>
                   </Box>
                 </Paper>
