@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Typography, 
@@ -50,6 +50,14 @@ const CandidateProfile = () => {
     'primary-concerns': '',
     'existing-values': '',
   });
+
+  // Retrieve data from session storage on page load
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('filledCandidateProfile');
+    if (savedData) {
+      setCandidateForm(JSON.parse(savedData)); // Populate form with saved data
+    }
+  }, []);
 
   // Handle form field changes
   const handleChange = (field) => (event) => {
@@ -140,6 +148,8 @@ const CandidateProfile = () => {
     
     // Save data to session storage for persistence between pages
     sessionStorage.setItem('candidateProfile', JSON.stringify(formattedForm));
+    
+    sessionStorage.setItem('filledCandidateProfile',JSON.stringify(candidateForm));
     
     // Navigate to speech parameters page
     navigate('/speech-parameters');

@@ -156,6 +156,28 @@ const SpeechEdit = () => {
     document.body.removeChild(element);
   };
 
+  // Download edited speech as a Doc file
+  const downloadSpeechAsDoc = () => {
+    if (!speechData.speech) return;
+  
+    const element = document.createElement('a');
+    const header = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+            xmlns:w='urn:schemas-microsoft-com:office:word' 
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'></head><body>`;
+    const footer = `</body></html>`;
+    const html = header + speechData.speech.replace(/\n/g, '<br>') + footer;
+  
+    const file = new Blob([html], { type: 'application/msword' });
+    element.href = URL.createObjectURL(file);
+    element.download = `edited_speech_${new Date().toISOString().slice(0, 10)}.doc`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+  
+
   // Download the edited speech as a PDF file
   const downloadSpeechAsPDF = () => {
     if (!speechData.speech) return;
@@ -463,6 +485,16 @@ const SpeechEdit = () => {
               disabled={!speechData.speech}
             >
               Download as PDF
+            </Button>
+          </Tooltip>
+          <Tooltip title="Download a formatted DOC with the speech text and metadata">
+            <Button 
+              variant="outlined" 
+              startIcon={<TextFileIcon />} 
+              onClick={downloadSpeechAsDoc}
+              disabled={!speechData.speech}
+            >
+              Download as Doc
             </Button>
           </Tooltip>
           <Button 

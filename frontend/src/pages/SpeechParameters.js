@@ -90,6 +90,7 @@ const SpeechParameters = () => {
     'speech-length': ''
   });
 
+
   // State for extended speech response
   const [speechResponse, setSpeechResponse] = useState({
     speech: '',
@@ -105,23 +106,20 @@ const SpeechParameters = () => {
     }
 
     // Load speech parameters from local storage
-    const savedSpeechParams = localStorage.getItem('speechParameters');
+    const savedSpeechParams = sessionStorage.getItem('speechParameters');
     if (savedSpeechParams) {
       setSpeechParams(JSON.parse(savedSpeechParams));
     }
   }, []);
 
-  // Save speech parameters to local storage whenever they change
-  useEffect(() => {
-    localStorage.setItem('speechParameters', JSON.stringify(speechParams));
-  }, [speechParams]);
-
   // Handle speech parameter changes
   const handleSpeechParamChange = (field) => (event) => {
-    setSpeechParams({
+    const updatedParams = {
       ...speechParams,
       [field]: event.target.value,
-    });
+    };
+    sessionStorage.setItem('speechParameters', JSON.stringify(updatedParams));
+    setSpeechParams(updatedParams);
   };
 
   // Handle slider changes for discrete values
@@ -441,6 +439,26 @@ const SpeechParameters = () => {
     doc.save(`political_speech_${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
+  const downloadSpeechAsDoc = () => {
+    if (!speechResponse.speech) return;
+  
+    const element = document.createElement('a');
+    const header = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+            xmlns:w='urn:schemas-microsoft-com:office:word' 
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'></head><body>`;
+    const footer = `</body></html>`;
+    const html = header + speechResponse.speech.replace(/\n/g, '<br>') + footer;
+  
+    const file = new Blob([html], { type: 'application/msword' });
+    element.href = URL.createObjectURL(file);
+    element.download = `political_speech_${new Date().toISOString().slice(0, 10)}.doc`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   // Download the complete response as JSON
   const downloadResponseAsJSON = () => {
     if (!speechResponse.speech) return;
@@ -453,6 +471,8 @@ const SpeechParameters = () => {
     element.click();
     document.body.removeChild(element);
   };
+
+  
 
   // Navigate to edit page with current speech data
   const handleEditSpeech = () => {
@@ -1278,6 +1298,16 @@ const SpeechParameters = () => {
                       fullWidth
                     >
                       Download as PDF
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Download a formatted PDF with the speech text and metadata">
+                    <Button 
+                      variant="outlined" 
+                      startIcon={<TextFileIcon />} 
+                      onClick={downloadSpeechAsDoc}
+                      fullWidth
+                    >
+                      Download as DOC
                     </Button>
                   </Tooltip>
                   <Button 

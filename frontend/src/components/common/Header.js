@@ -16,15 +16,23 @@ const Header = () => {
             to="/"
             sx={{ mr: 2 }}
           >
-            Candidate Profile
+            Home
           </Button>
           <Button 
             color="inherit" 
             component={RouterLink} 
-            to="/speech-parameters"
+            to="/candidate-profile"
             sx={{ mr: 2 }}
           >
-            Speech Parameters
+            Speech Creation
+          </Button>
+          <Button 
+            color="inherit" 
+            component={RouterLink} 
+            to="/load-templates"
+            sx={{ mr: 2 }}
+          >
+            Load Templates
           </Button>
           <Button 
             color="inherit" 

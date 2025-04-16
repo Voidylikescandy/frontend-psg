@@ -8,6 +8,9 @@ import SpeechParameters from './pages/SpeechParameters';
 import SpeechEdit from './pages/SpeechEdit';
 import SpeechAnalysis from './pages/SpeechAnalysis';
 import DataVisualization from './pages/DataVisualization';
+import Home from './pages/Home';
+import LoadTemplates from './pages/LoadTemplates';
+
 
 // Create a theme
 const theme = createTheme({
@@ -38,13 +41,16 @@ function App() {
       <Router>
         <Header />
         <div className="container">
-          <Routes>
-            <Route path="/" element={<CandidateProfile />} />
-            <Route path="/speech-parameters" element={<SpeechParameters />} />
-            <Route path="/speech-edit" element={<SpeechEdit />} />
-            <Route path="/speech-analysis" element={<SpeechAnalysis />} />
-            <Route path="/data-visualization" element={<DataVisualization />} />
-          </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/candidate-profile" element={<CandidateProfile />} />
+          <Route path="/speech-parameters" element={<SpeechParameters />} />
+          <Route path="/speech-edit" element={<SpeechEdit />} />
+          <Route path="/speech-analysis" element={<SpeechAnalysis />} />
+          <Route path="/data-visualization" element={<DataVisualization />} />
+          <Route path="/load-templates" element={<LoadTemplates />} />
+        </Routes>
+
         </div>
       </Router>
     </ThemeProvider>
