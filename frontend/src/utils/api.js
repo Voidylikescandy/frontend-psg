@@ -2,6 +2,41 @@ import axios from 'axios';
 
 import API_URL from '../config';
 
+// Set up axios interceptor to add the auth token to all requests
+const setupAxiosInterceptors = () => {
+  // Request interceptor - add token
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  // Response interceptor - handle authentication errors
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        // Clear localStorage and redirect to login if token is invalid
+        localStorage.removeItem('token');
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+};
+
+// Initialize interceptors
+setupAxiosInterceptors();
+
 export const generateSpeech = async (candidateData, speechParams = {}) => {
   try {
     // Combine candidate profile data with speech parameters

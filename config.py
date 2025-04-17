@@ -13,6 +13,8 @@ TEMPLATE = """
     key-strengths: {key-strengths}  
 
     age-range: {age-range}  
+    occupation: {occupation}  
+    interests: {interests}  
     education-level: {education-level}  
     socioeconomic-status: {socioeconomic-status}  
     cultural-background: {cultural-background}  

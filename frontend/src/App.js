@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/common/Header';
@@ -10,7 +10,10 @@ import SpeechAnalysis from './pages/SpeechAnalysis';
 import DataVisualization from './pages/DataVisualization';
 import Home from './pages/Home';
 import LoadTemplates from './pages/LoadTemplates';
-
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import { AuthProvider, useAuth } from './utils/authContext';
 
 // Create a theme
 const theme = createTheme({
@@ -34,25 +37,112 @@ const theme = createTheme({
   },
 });
 
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" />;
+  }
+  
+  return children;
+};
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      
+      {/* Protected routes */}
+      <Route 
+        path="/" 
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/candidate-profile" 
+        element={
+          <ProtectedRoute>
+            <CandidateProfile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/speech-parameters" 
+        element={
+          <ProtectedRoute>
+            <SpeechParameters />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/speech-edit" 
+        element={
+          <ProtectedRoute>
+            <SpeechEdit />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/speech-analysis" 
+        element={
+          <ProtectedRoute>
+            <SpeechAnalysis />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/data-visualization" 
+        element={
+          <ProtectedRoute>
+            <DataVisualization />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/load-templates" 
+        element={
+          <ProtectedRoute>
+            <LoadTemplates />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Redirect all other routes to login */}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Header />
-        <div className="container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/candidate-profile" element={<CandidateProfile />} />
-          <Route path="/speech-parameters" element={<SpeechParameters />} />
-          <Route path="/speech-edit" element={<SpeechEdit />} />
-          <Route path="/speech-analysis" element={<SpeechAnalysis />} />
-          <Route path="/data-visualization" element={<DataVisualization />} />
-          <Route path="/load-templates" element={<LoadTemplates />} />
-        </Routes>
-
-        </div>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Header />
+          <div className="container">
+            <AppRoutes />
+          </div>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

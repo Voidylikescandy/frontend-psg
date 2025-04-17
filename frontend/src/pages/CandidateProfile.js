@@ -49,6 +49,8 @@ const CandidateProfile = () => {
     'political-affiliation-strength': '',
     'primary-concerns': '',
     'existing-values': '',
+    'occupation': '',
+    'interests': '',
   });
 
   // Retrieve data from session storage on page load
@@ -343,6 +345,38 @@ const CandidateProfile = () => {
               max={100}
               aria-labelledby="age-range-slider"
               sx={{ mb: 2 }}
+            />
+          </Grid>
+
+          {/* Occupation */}
+          <Grid item xs={12} md={6}>
+            <Box mb={1}>
+              <Typography variant="body2" color="textSecondary">
+                Describe the most common occupations of your audience. This helps tailor the speech to address professional concerns.
+              </Typography>
+            </Box>
+            <TextInput
+              id="occupation"
+              label="Occupation"
+              value={candidateForm['occupation']}
+              onChange={handleChange('occupation')}
+              placeholder="e.g., Teachers, IT professionals, Factory workers, Small business owners"
+            />
+          </Grid>
+
+          {/* Interests */}
+          <Grid item xs={12} md={6}>
+            <Box mb={1}>
+              <Typography variant="body2" color="textSecondary">
+                List common interests and hobbies of your audience. This helps relate to their lifestyle and create meaningful connections.
+              </Typography>
+            </Box>
+            <TextInput
+              id="interests"
+              label="Interests"
+              value={candidateForm['interests']}
+              onChange={handleChange('interests')}
+              placeholder="e.g., Sports, Technology, Community events, Traditional arts"
             />
           </Grid>
 

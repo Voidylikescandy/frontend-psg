@@ -14,6 +14,13 @@ export const EXPERTISE_OPTIONS = [
   { value: 'Energy', label: 'Energy' },
 ];
 
+// Admin superuser credentials
+export const ADMIN_USER = {
+  username: 'admin',
+  email: 'admin@testmail.com',
+  password: 'admin123'
+};
+
 // Political Party Options
 export const POLITICAL_PARTY_OPTIONS = [
   { value: 'Aam Aadmi Party', label: 'Aam Aadmi Party' },
