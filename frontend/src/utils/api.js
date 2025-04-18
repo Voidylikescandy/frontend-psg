@@ -23,10 +23,15 @@ const setupAxiosInterceptors = () => {
     (response) => response,
     (error) => {
       if (error.response && error.response.status === 401) {
-        // Clear localStorage and redirect to login if token is invalid
-        localStorage.removeItem('token');
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-          window.location.href = '/login';
+        // Check if admin user before redirecting
+        const isAdmin = localStorage.getItem('adminToken') === 'true';
+        
+        if (!isAdmin) {
+          // Only clear token and redirect for non-admin users
+          localStorage.removeItem('token');
+          if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+            window.location.href = '/login';
+          }
         }
       }
       return Promise.reject(error);

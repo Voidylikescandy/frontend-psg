@@ -18,11 +18,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         const token = localStorage.getItem('token');
         
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-        
         // Check for admin user in localStorage first
         const adminToken = localStorage.getItem('adminToken');
         if (adminToken === 'true') {
@@ -31,6 +26,19 @@ export const AuthProvider = ({ children }) => {
             email: ADMIN_USER.email,
             id: 'admin-id'
           });
+          
+          // Set a dummy token for admin user to pass auth checks
+          if (!token) {
+            // Create a dummy token for admin
+            const dummyAdminToken = 'admin-token';
+            axios.defaults.headers.common['Authorization'] = `Bearer ${dummyAdminToken}`;
+          }
+          
+          setLoading(false);
+          return;
+        }
+        
+        if (!token) {
           setLoading(false);
           return;
         }
@@ -97,6 +105,13 @@ export const AuthProvider = ({ children }) => {
         
         // Store admin token in localStorage
         localStorage.setItem('adminToken', 'true');
+        
+        // Create a dummy token for admin authentication checks
+        const dummyAdminToken = 'admin-token';
+        localStorage.setItem('token', dummyAdminToken);
+        
+        // Set the default Authorization header for admin
+        axios.defaults.headers.common['Authorization'] = `Bearer ${dummyAdminToken}`;
         
         setUser(userData);
         setLoading(false);

@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/common/Header';
 import CandidateProfile from './pages/CandidateProfile';
 import SpeechParameters from './pages/SpeechParameters';
+import SpeechForm from './pages/SpeechForm';
 import SpeechEdit from './pages/SpeechEdit';
 import SpeechAnalysis from './pages/SpeechAnalysis';
 import DataVisualization from './pages/DataVisualization';
@@ -81,6 +82,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SpeechParameters />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/speech-form" 
+        element={
+          <ProtectedRoute>
+            <SpeechForm />
           </ProtectedRoute>
         } 
       />

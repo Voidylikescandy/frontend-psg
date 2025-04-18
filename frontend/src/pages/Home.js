@@ -23,7 +23,7 @@ function Home() {
       <div style={{ marginTop: '40px' }}>
         <button
           style={{ ...buttonStyle, backgroundColor: '#1976d2', color: 'white' }}
-          onClick={() => navigate('/candidate-profile')}
+          onClick={() => navigate('/speech-form', { state: { fromHome: true } })}
         >
           Start Speech Creation
         </button>

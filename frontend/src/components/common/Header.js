@@ -23,46 +23,6 @@ const Header = () => {
             >
               Home
             </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/candidate-profile"
-              sx={{ mr: 2 }}
-            >
-              Speech Creation
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/load-templates"
-              sx={{ mr: 2 }}
-            >
-              Load Templates
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/speech-edit"
-              sx={{ mr: 2 }}
-            >
-              Edit Speech
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/speech-analysis"
-              sx={{ mr: 2 }}
-            >
-              Speech Analysis
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/data-visualization"
-              sx={{ mr: 2 }}
-            >
-              Data Visualization
-            </Button>
             
             {/* Profile link */}
             <Chip
