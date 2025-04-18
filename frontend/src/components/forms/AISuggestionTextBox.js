@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
+import { GROQ_API_KEY } from '../../utils/constants';
 
 const AISuggestionTextBox = ({ 
   id, 
@@ -114,7 +115,7 @@ IMPORTANT FORMATTING INSTRUCTIONS:
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer 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`,
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'meta-llama/llama-4-maverick-17b-128e-instruct',

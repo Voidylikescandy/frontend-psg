@@ -18,6 +18,7 @@ import {
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { GROQ_API_KEY } from '../../utils/constants';
 
 const AIEditTextBox = ({ 
   value, 
@@ -142,7 +143,7 @@ INSTRUCTIONS: ${promptText}`;
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer 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`,
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'meta-llama/llama-4-maverick-17b-128e-instruct',

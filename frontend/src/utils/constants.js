@@ -104,7 +104,7 @@ export const CANDIDATE_OFFICE_MAPPING = {
   'Kumari Mayawati': 'Party President',
   'Shri Anand Kumar': 'Vice President',
   
-  'Shri Lal Krishna Advani': 'Deputy Prime Minister of India',
+  'Shri Lal Krishna Advani': 'Former Deputy Prime Minister of India',
   'Shri Narendra Modi': 'Prime Minister of India',
   'Shri Amit Shah': 'National President (2014-2017, 2017-2020)',
   'Shri Jagat Prakash Nadda': 'National President',
@@ -337,4 +337,8 @@ export const TEST_SPEECH = {
     "category": "Inspirational",
     "explanation": "The speech conveys a strong sense of pride, optimism, and forward-looking vision. It highlights historical greatness while emphasizing future growth, development, and opportunities. The language is uplifting, aiming to motivate and unite the people toward a collective vision of progress."
   }
-}; 
+};
+
+// API Keys
+export const SAPLING_API_KEY = 'UQSWUUKJNU0XVC1JLK257YULHAU7DG1W';
+export const GROQ_API_KEY = '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'; 
