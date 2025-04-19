@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import API_URL from '../config';
+import { AZURE_TRANSLATOR_API_KEY, AZURE_TRANSLATOR_REGION } from './constants';
 
 // Set up axios interceptor to add the auth token to all requests
 const setupAxiosInterceptors = () => {
@@ -81,9 +82,61 @@ export const generateSpeech = async (candidateData, speechParams = {}) => {
   }
 };
 
+export const translateSpeech = async (text, targetLanguage) => {
+  try {
+    // Azure Translator API endpoint
+    const endpoint = "https://api.cognitive.microsofttranslator.com";
+    const route = "/translate?api-version=3.0";
+    
+    // Create request with text to translate
+    const response = await axios({
+      baseURL: endpoint,
+      url: route,
+      method: 'post',
+      headers: {
+        'Ocp-Apim-Subscription-Key': AZURE_TRANSLATOR_API_KEY,
+        'Ocp-Apim-Subscription-Region': AZURE_TRANSLATOR_REGION,
+        'Content-type': 'application/json',
+      },
+      params: {
+        'to': targetLanguage
+      },
+      data: [{
+        'text': text
+      }],
+    });
+
+    // Extract translated text from response
+    if (response.data && response.data.length > 0 && 
+        response.data[0].translations && 
+        response.data[0].translations.length > 0) {
+      return response.data[0].translations[0].text;
+    }
+    
+    throw new Error('Translation failed or returned empty result');
+  } catch (error) {
+    console.error('Error translating speech:', error);
+    // If it's an axios error with response, use the backend error
+    if (error.response && error.response.data) {
+      const apiError = new Error(error.response.data.message || 'Failed to translate speech');
+      apiError.error = error.response.data.error || 'ERR_TRANSLATION_FAILURE';
+      throw apiError;
+    }
+    // If it's our custom error from above, pass it through
+    if (error.error && error.message) {
+      throw error;
+    }
+    // For other errors, create a generic error
+    const genericError = new Error('Failed to connect to the translation service. Please try again.');
+    genericError.error = 'ERR_TRANSLATION_FAILURE';
+    throw genericError;
+  }
+};
+
 // Create a named API object before exporting
 const apiService = {
-  generateSpeech
+  generateSpeech,
+  translateSpeech
 };
 
 export default apiService; 

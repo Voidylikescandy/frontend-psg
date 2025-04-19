@@ -8,6 +8,7 @@ import SpeechParameters from './pages/SpeechParameters';
 import SpeechForm from './pages/SpeechForm';
 import SpeechEdit from './pages/SpeechEdit';
 import SpeechAnalysis from './pages/SpeechAnalysis';
+import SpeechTranslate from './pages/SpeechTranslate';
 import DataVisualization from './pages/DataVisualization';
 import Home from './pages/Home';
 import LoadTemplates from './pages/LoadTemplates';
@@ -106,6 +107,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SpeechAnalysis />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/speech-translate" 
+        element={
+          <ProtectedRoute>
+            <SpeechTranslate />
           </ProtectedRoute>
         } 
       />

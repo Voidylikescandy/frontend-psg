@@ -35,6 +35,7 @@ import JsonIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import TranslateIcon from '@mui/icons-material/Translate';
 import { jsPDF } from 'jspdf';
 import { generateSpeech } from '../utils/api';
 import TextInput from '../components/forms/TextInput';
@@ -757,6 +758,15 @@ const SpeechForm = () => {
     
     // Navigate to the analysis page
     navigate('/speech-analysis');
+  };
+
+  // Navigate to translate page with current speech data
+  const handleTranslateSpeech = () => {
+    // Save the current speech data to sessionStorage for the translate page
+    sessionStorage.setItem('translateSpeechData', JSON.stringify(speechResponse));
+    
+    // Navigate to the translate page
+    navigate('/speech-translate');
   };
 
   // Check if 'other' party is selected
@@ -1861,6 +1871,14 @@ const SpeechForm = () => {
                       onClick={handleAnalyseSpeech}
                     >
                       Analyse Speech
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      startIcon={<TranslateIcon />}
+                      onClick={handleTranslateSpeech}
+                    >
+                      Translate Speech
                     </Button>
                   </Box>
                 </Paper>

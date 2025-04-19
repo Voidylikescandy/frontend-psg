@@ -21,6 +21,24 @@ export const ADMIN_USER = {
   password: 'admin123'
 };
 
+// Azure Translator API Configuration
+export const AZURE_TRANSLATOR_API_KEY = 'uxNDQpNEItnMD260MmXVB1rT3fhj5SB44gUvQz1BcR6c4szdBx0mJQQJ99BDACGhslBXJ3w3AAAbACOGUMsV';
+export const AZURE_TRANSLATOR_REGION = 'centralindia';
+
+// Indian Language Options for Translation
+export const TRANSLATION_LANGUAGE_OPTIONS = [
+  { value: 'hi', label: 'Hindi' },
+  { value: 'bn', label: 'Bengali' },
+  { value: 'te', label: 'Telugu' },
+  { value: 'ta', label: 'Tamil' },
+  { value: 'mr', label: 'Marathi' },
+  { value: 'gu', label: 'Gujarati' },
+  { value: 'kn', label: 'Kannada' },
+  { value: 'ml', label: 'Malayalam' },
+  { value: 'pa', label: 'Punjabi' },
+  { value: 'or', label: 'Odia' },
+];
+
 // Political Party Options
 export const POLITICAL_PARTY_OPTIONS = [
   { value: 'Aam Aadmi Party', label: 'Aam Aadmi Party' },
