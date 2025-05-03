@@ -42,6 +42,7 @@ import TextInput from '../components/forms/TextInput';
 import TextAreaWithWordLimit from '../components/forms/TextAreaWithWordLimit';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
 import AISuggestionTextBox from '../components/forms/AISuggestionTextBox';
+import PersuasionTechniqueSelector from '../components/forms/PersuasionTechniqueSelector';
 import { 
   EXPERTISE_OPTIONS, 
   EDUCATION_LEVEL_OPTIONS,
@@ -58,7 +59,8 @@ import {
   FORMALITY_OPTIONS,
   RHETORICAL_DEVICES_OPTIONS,
   PRIMARY_OBJECTIVE_MAP,
-  TEST_SPEECH
+  TEST_SPEECH,
+  PERSUASION_TECHNIQUE_OPTIONS
 } from '../utils/constants';
 
 const SpeechForm = () => {
@@ -116,7 +118,9 @@ const SpeechForm = () => {
     'humor': 'Balanced',
     'formality': '',
     'rhetorical-devices': [],
-    'speech-length': ''
+    'speech-length': '',
+    'persuasion-techniques': [],
+    'persuasion-instructions': ''
   });
   const [speechResponse, setSpeechResponse] = useState({
     speech: '',
@@ -172,7 +176,9 @@ const SpeechForm = () => {
         'humor': 'Balanced',
         'formality': '',
         'rhetorical-devices': [],
-        'speech-length': ''
+        'speech-length': '',
+        'persuasion-techniques': [],
+        'persuasion-instructions': ''
       });
       
       setSpeechResponse({
@@ -501,6 +507,30 @@ const SpeechForm = () => {
     return elements.join(', ');
   };
 
+  // Add new handler for persuasion techniques
+  const handlePersuasionTechniquesChange = (event) => {
+    const updatedParams = {
+      ...speechParams,
+      'persuasion-techniques': event.target.value,
+    };
+    
+    // Auto-save to session storage
+    sessionStorage.setItem('speechParameters', JSON.stringify(updatedParams));
+    setSpeechParams(updatedParams);
+  };
+
+  // Add new handler for persuasion instructions
+  const handlePersuasionInstructionsChange = (event) => {
+    const updatedParams = {
+      ...speechParams,
+      'persuasion-instructions': event.target.value,
+    };
+    
+    // Auto-save to session storage
+    sessionStorage.setItem('speechParameters', JSON.stringify(updatedParams));
+    setSpeechParams(updatedParams);
+  };
+
   // Generate speech
   const handleGenerateSpeech = async () => {
     if (!candidateProfile) {
@@ -539,6 +569,8 @@ const SpeechForm = () => {
         'story-elements': formatStoryElements(),
         // Format rhetorical devices
         'rhetorical-devices': formatRhetoricalDevices(speechParams['rhetorical-devices']),
+        // Format persuasion techniques with full descriptions
+        'persuasion-techniques': formatPersuasionTechniquesWithDescriptions(speechParams['persuasion-techniques']),
         // Add enable_rag parameter
         'enable_rag': enableRAG
       };
@@ -571,6 +603,34 @@ const SpeechForm = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Add a new formatter for persuasion techniques with detailed descriptions
+  const formatPersuasionTechniquesWithDescriptions = (techniques) => {
+    if (!techniques || techniques.length === 0) return '';
+    
+    const formattedTechniques = techniques.map(technique => {
+      const techniqueObject = PERSUASION_TECHNIQUE_OPTIONS.find(option => option.value === technique);
+      if (!techniqueObject) return technique;
+      
+      return `${techniqueObject.label} - ${techniqueObject.explanation}`;
+    });
+    
+    const result = formattedTechniques.join(' ');
+    console.log("Formatted persuasion techniques with descriptions:", result);
+    return result;
+  };
+
+  // Add a new formatter for persuasion techniques
+  const formatPersuasionTechniques = (techniques) => {
+    if (!techniques || techniques.length === 0) return '';
+    
+    const formattedTechniques = techniques.map(technique => {
+      const techniqueObject = PERSUASION_TECHNIQUE_OPTIONS.find(option => option.value === technique);
+      return techniqueObject ? techniqueObject.label : technique;
+    });
+    
+    return formattedTechniques.join(', ');
   };
 
   // Download the generated speech as a text file
@@ -1761,6 +1821,27 @@ const SpeechForm = () => {
               />
             </Grid>
           </Grid>
+        </Box>
+
+        <Divider sx={{ mb: 3 }} />
+        
+        {/* Persuasion Techniques Section */}
+        <Box mb={4}>
+          <Typography variant="h5" gutterBottom>
+            Persuasion Techniques
+          </Typography>
+          <Typography variant="body2" color="textSecondary" paragraph>
+            Select and customize persuasion techniques to make your speech more effective.
+          </Typography>
+
+          <PersuasionTechniqueSelector
+            candidateForm={candidateForm || {}}
+            speechParams={speechParams || {}}
+            value={speechParams?.['persuasion-techniques'] || []}
+            onChange={handlePersuasionTechniquesChange}
+            persuasionInstructions={speechParams?.['persuasion-instructions'] || ''}
+            onPersuasionInstructionsChange={handlePersuasionInstructionsChange}
+          />
         </Box>
 
         <Divider sx={{ mb: 3 }} />

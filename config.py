@@ -42,6 +42,8 @@ TEMPLATE = """
     recent-events: {recent-events}  
     campaign-stage: {campaign-stage}  
     geographic-location: {geographic-location}  
+    persuasion-techniques: {persuasion-techniques}
+    persuasion-instructions: {persuasion-instructions}
 
     retrieved_info: {retrieved_info}   
 """
@@ -263,7 +265,4 @@ output:
     "explanation": "The speech maintains a confrontational tone throughout, directly challenging opposing parties and their policies, using rhetorical questions to highlight failures of current leadership, and creating a clear contrast between Congress's approach and that of other political entities. While offering solutions, it consistently frames issues through a lens of struggle against systemic inequalities, reinforcing the combative positioning requested in the parameters."
   }
 }
-
-
-</example 2>
 """

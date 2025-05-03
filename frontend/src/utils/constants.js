@@ -359,4 +359,38 @@ export const TEST_SPEECH = {
 
 // API Keys
 export const SAPLING_API_KEY = 'UQSWUUKJNU0XVC1JLK257YULHAU7DG1W';
-export const GROQ_API_KEY = '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'; 
+export const GROQ_API_KEY = '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';
+
+// Add this along with other exported constants
+export const PERSUASION_TECHNIQUE_OPTIONS = [
+  {
+    value: 'Sustain Their Compliance',
+    label: 'Sustain Their Compliance',
+    explanation: 'This technique focuses on maintaining the audience\'s existing support by reinforcing decisions they\'ve already made that align with your campaign. It builds on psychological consistency where people prefer to remain consistent with prior commitments.'
+  },
+  {
+    value: 'Drive Their Momentum',
+    label: 'Drive Their Momentum',
+    explanation: 'This approach creates a sense of movement and progress toward a larger goal, encouraging listeners to continue supporting your cause as part of an ongoing journey. It leverages the psychological tendency to complete what we\'ve started.'
+  },
+  {
+    value: 'Optimize Your Message',
+    label: 'Optimize Your Message',
+    explanation: 'This technique involves crafting your message to maximize appeal by framing issues in terms of values that resonate most strongly with your audience. It uses psychological framing effects to present information in the most persuasive way.'
+  },
+  {
+    value: 'Habituate Your Message',
+    label: 'Habituate Your Message',
+    explanation: 'This approach involves strategic repetition of key messages in varied formats to build familiarity and trust. It leverages the mere exposure effect where people develop preferences for things they encounter repeatedly.'
+  },
+  {
+    value: 'Trigger Social Pressure',
+    label: 'Trigger Social Pressure',
+    explanation: 'This technique utilizes social proof by highlighting community support and creating the impression that others like the audience are already on board. It leverages our natural tendency to look to others for behavioral guidance.'
+  },
+  {
+    value: 'Elicit Congruent Attitudes',
+    label: 'Elicit Congruent Attitudes',
+    explanation: 'This approach involves guiding the audience to generate their own arguments in favor of your position, creating stronger and more lasting persuasive effects. It builds on self-persuasion where internally generated arguments are more convincing than external ones.'
+  }
+]; 
