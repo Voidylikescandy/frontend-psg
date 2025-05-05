@@ -24,6 +24,7 @@ const AISuggestionTextBox = ({
   value, 
   onChange, 
   placeholder = '', 
+  promptPlaceholder = 'E.g., Generate key messages about economic policy focused on job creation...',
   required = false,
   fullWidth = true,
   margin = 'normal',
@@ -272,7 +273,7 @@ IMPORTANT FORMATTING INSTRUCTIONS:
             >
               <InputBase
                 sx={{ flex: 1, px: 1 }}
-                placeholder="E.g., Generate key messages about economic policy focused on job creation..."
+                placeholder={promptPlaceholder}
                 value={userPrompt}
                 onChange={handleUserPromptChange}
                 multiline

@@ -291,6 +291,7 @@ const PersuasionTechniqueSelector = ({
             value={persuasionInstructions}
             onChange={onPersuasionInstructionsChange}
             placeholder="Enter specific instructions on how to implement persuasion techniques in the speech..."
+            promptPlaceholder="Provide detailed instructions on how to implement these persuasion techniques for this specific audience and candidate..."
             rows={3}
             contextInfo={`
               Candidate: ${candidateForm?.['candidate-name'] || ''} (${candidateForm?.['political-party'] === 'other' ? candidateForm?.['other-party'] : candidateForm?.['political-party'] || ''}), 

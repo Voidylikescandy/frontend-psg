@@ -36,6 +36,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import TranslateIcon from '@mui/icons-material/Translate';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { jsPDF } from 'jspdf';
 import { generateSpeech } from '../utils/api';
 import TextInput from '../components/forms/TextInput';
@@ -841,6 +842,15 @@ const SpeechForm = () => {
     <>
       {/* Candidate Profile Section */}
       <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" fontWeight="medium">Welcome to the Political Speech Generator!</Typography>
+          <Typography variant="body2">
+            This tool helps you create personalized political speeches by filling out three main sections: Candidate Profile, Audience Profile, and Speech Parameters. 
+            Look for the <AutoAwesomeIcon fontSize="small" sx={{ verticalAlign: 'middle' }} /> icon to get AI-powered suggestions as you work through the form.
+            Required fields are marked with an asterisk (*).
+          </Typography>
+        </Alert>
+        
         <Typography variant="h4" component="h1" gutterBottom>
           Candidate Profile
         </Typography>
@@ -997,6 +1007,13 @@ const SpeechForm = () => {
           Define the target audience for the speech to make it more relevant and engaging.
         </Typography>
         <Divider sx={{ mb: 3 }} />
+
+        <Alert severity="success" sx={{ mb: 3 }}>
+          <Typography variant="body2">
+            <strong>Pro Tip:</strong> The more specific you are about your audience, the more tailored and effective your speech will be. 
+            Defining your audience helps the AI understand who you're speaking to and what matters to them.
+          </Typography>
+        </Alert>
 
         <Grid container spacing={2}>
           {/* Age Range Slider */}
@@ -1173,6 +1190,7 @@ const SpeechForm = () => {
               value={candidateForm['primary-concerns']}
               onChange={handleChange('primary-concerns')}
               placeholder="e.g., Job security, Healthcare costs, Education quality, Climate change"
+              promptPlaceholder="Generate a list of primary voter concerns for a constituency with the demographics I've described..."
               rows={2}
               contextInfo="Primary concerns/needs are the key issues that matter most to your target audience. These will help tailor the speech to address specific problems and interests of the voters."
               systemPrompt="You are a political strategist helping to identify key voter concerns for a political speech. Provide a concise list of relevant issues based on the information provided, separated by commas."
@@ -1192,6 +1210,7 @@ const SpeechForm = () => {
               value={candidateForm['existing-values']}
               onChange={handleChange('existing-values')}
               placeholder="e.g., Family values, Individual liberty, Community welfare, Environmental stewardship"
+              promptPlaceholder="Identify core values and beliefs likely held by this voter demographic..."
               rows={2}
               contextInfo="Existing values/beliefs are the core principles that your target audience strongly identifies with. Understanding these values helps create speeches that resonate with their worldview."
               systemPrompt="You are a political analyst specializing in voter values and beliefs. Generate a concise list of core values that would be important to the described audience, separated by commas."
@@ -1209,6 +1228,12 @@ const SpeechForm = () => {
           Configure speech settings and generate your political speech.
         </Typography>
         <Divider sx={{ mb: 3 }} />
+
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <Typography variant="body2">
+            <strong>Getting Started:</strong> Each section below helps shape different aspects of your speech. You don't need to fill out every field—focus on the ones most relevant to your speech type. 
+          </Typography>
+        </Alert>
 
         {/* Speech Objective Subsection */}
         <Box mb={4}>
@@ -1279,6 +1304,7 @@ const SpeechForm = () => {
                 value={speechParams['primary-objective']}
                 onChange={handleSpeechParamChange('primary-objective')}
                 placeholder="What is the main purpose of this speech?"
+                promptPlaceholder="Suggest a compelling primary objective for this type of political speech..."
                 rows={2}
                 required
                 contextInfo="The primary objective is the main goal your speech aims to achieve. It will guide the overall structure and messaging of your speech. This field is auto-filled based on the speech type you selected, but you can modify or enhance it."
@@ -1299,6 +1325,7 @@ const SpeechForm = () => {
                 value={speechParams['secondary-objective']}
                 onChange={handleSpeechParamChange('secondary-objective')}
                 placeholder="What else would you like to accomplish with this speech?"
+                promptPlaceholder="Generate secondary objectives that would complement the primary goal of this speech..."
                 rows={2}
                 contextInfo="Secondary objectives are additional goals your speech should accomplish beyond the primary purpose. These can include building rapport with the audience, addressing specific concerns, or setting the stage for future messaging."
                 systemPrompt="You are a strategic political communications expert. Based on the provided context, suggest effective secondary objectives that complement the primary goal of the speech and add depth to its purpose."
@@ -1318,6 +1345,12 @@ const SpeechForm = () => {
             Define the central theme and key messages of your campaign.
           </Typography>
 
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>Core Message Importance:</strong> Your main message and policy points form the foundation of your speech. Be specific about what makes your candidate unique and what concrete policies they support. These elements will be emphasized throughout the generated speech.
+            </Typography>
+          </Alert>
+
           <Grid container spacing={2}>
             {/* Slogan */}
             <Grid item xs={12}>
@@ -1332,6 +1365,7 @@ const SpeechForm = () => {
                 value={speechParams['slogan']}
                 onChange={handleSpeechParamChange('slogan')}
                 placeholder="e.g., Building a Brighter Tomorrow Together"
+                promptPlaceholder="Create a memorable campaign slogan for this candidate and platform..."
                 rows={1}
                 contextInfo="A campaign slogan is a short, memorable phrase that captures the essence of your campaign message and is easily repeatable. It should reflect your core values and vision."
                 systemPrompt="You are a political campaign messaging expert specializing in creating memorable slogans. Create a short, impactful slogan that captures the essence of the campaign based on the provided information. Keep it under 8 words, memorable, and aligned with the candidate's party and values."
@@ -1351,6 +1385,7 @@ const SpeechForm = () => {
                 value={speechParams['main-message']}
                 onChange={handleSpeechParamChange('main-message')}
                 placeholder="Outline the desired future state and central theme you want to convey..."
+                promptPlaceholder="Draft a compelling vision statement for this campaign that captures the candidate's aspirations..."
                 rows={3}
                 required
                 contextInfo="The main message or vision is the central theme of your campaign. It should articulate your vision for the future and what you stand for in a compelling way."
@@ -1389,6 +1424,7 @@ const SpeechForm = () => {
                           value={point}
                           onChange={handlePolicyPointChange(index)}
                           placeholder={`Enter policy point ${index + 1}`}
+                          promptPlaceholder="Generate a specific, actionable policy point that addresses voter concerns..."
                           rows={2}
                           contextInfo="Policy points are specific proposals or positions that form the substance of your speech. Each point should be clear, relevant to your audience, and aligned with your overall message."
                           systemPrompt="You are a policy expert helping to craft clear, compelling policy points for a political speech. Create a specific, actionable policy point that aligns with the candidate's platform and addresses voter concerns. Focus on one issue and make it concise yet substantive."
@@ -1437,6 +1473,7 @@ const SpeechForm = () => {
                 value={speechParams['key-messages']}
                 onChange={handleSpeechParamChange('key-messages')}
                 placeholder="Enter the main messages that should be emphasized in the speech..."
+                promptPlaceholder="Generate clear, persuasive key messages that should be emphasized throughout this speech..."
                 required
                 rows={3}
                 contextInfo="This information will be used for speech generation. Key messages include the main elements of your speech that you want the audience to remember. Generate key messages based on the political context, candidate profile, and campaign objectives."
@@ -1454,6 +1491,12 @@ const SpeechForm = () => {
                   Add narrative elements to make your speech more engaging and relatable.
                 </Typography>
               </Box>
+              
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>Storytelling Tips:</strong> Great speeches often include stories that emotionally connect with the audience. You don't need to fill all three storytelling fields—even one well-crafted story can make your speech memorable. Try the AI suggestion feature to help craft compelling narratives.
+                </Typography>
+              </Alert>
             </Grid>
 
             {/* Personal Story */}
@@ -1469,6 +1512,7 @@ const SpeechForm = () => {
                 value={speechParams['personal-story']}
                 onChange={handleSpeechParamChange('personal-story')}
                 placeholder="Describe a personal experience that illustrates your message..."
+                promptPlaceholder="Draft a compelling personal story for this candidate that illustrates their connection to the speech theme..."
                 rows={2}
                 contextInfo="A personal story is a narrative from the candidate's own life that illustrates a key point in the speech. Effective personal stories create emotional connections and humanize the candidate."
                 systemPrompt="You are a political speechwriter specializing in narrative. Craft a compelling personal story that illustrates the candidate's connection to the speech theme. The story should be authentic-sounding, relatable, and emotionally resonant while reinforcing key campaign messages."
@@ -1488,6 +1532,7 @@ const SpeechForm = () => {
                 value={speechParams['anecdote']}
                 onChange={handleSpeechParamChange('anecdote')}
                 placeholder="Share a relevant anecdote that supports your message..."
+                promptPlaceholder="Create a brief, engaging anecdote that would effectively illustrate a key point of this speech..."
                 rows={2}
                 contextInfo="An anecdote is a short, interesting story about a real incident or person that helps illustrate a point in your speech. Unlike personal stories, anecdotes can be about others or historical events."
                 systemPrompt="You are a storytelling expert for political speeches. Create a brief, engaging anecdote (about someone other than the candidate) that effectively illustrates a key point of the speech. The anecdote should be memorable and clearly connect to the message."
@@ -1507,6 +1552,7 @@ const SpeechForm = () => {
                 value={speechParams['hypothetical-scenario']}
                 onChange={handleSpeechParamChange('hypothetical-scenario')}
                 placeholder="Paint a picture of what could be possible or what might happen..."
+                promptPlaceholder="Generate a hypothetical scenario that illustrates the potential impact of these policies..."
                 rows={2}
                 contextInfo="A hypothetical scenario is an imagined situation that helps audiences visualize either a positive future that could result from your policies or negative outcomes that might occur without them."
                 systemPrompt="You are a creative political communicator. Develop a vivid hypothetical scenario that helps the audience visualize either the benefits of the candidate's proposals or the consequences of inaction. Make it realistic, specific, and emotionally engaging."
@@ -1523,6 +1569,12 @@ const SpeechForm = () => {
                   Define what you want your audience to do after hearing your speech.
                 </Typography>
               </Box>
+              
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>Effective CTAs:</strong> The best calls to action are specific, actionable, and easy to follow. Include clear next steps (website links, contact information, event dates) so your audience knows exactly what to do. A strong CTA can significantly increase audience engagement after your speech.
+                </Typography>
+              </Alert>
             </Grid>
 
             {/* Call to Action Type */}
@@ -1563,6 +1615,7 @@ const SpeechForm = () => {
                 value={speechParams['cta-instructions']}
                 onChange={handleSpeechParamChange('cta-instructions')}
                 placeholder="e.g., Visit our website at www.example.com to sign up as a volunteer"
+                promptPlaceholder="Write specific, actionable instructions for this call to action type..."
                 rows={2}
                 contextInfo="Call to action instructions provide specific, actionable guidance for your audience on how to respond to your speech. This should include clear steps, relevant contact information, or specific dates/locations."
                 systemPrompt="You are a campaign engagement specialist. Create clear, specific instructions for the audience to follow through on the selected call to action. Include concrete details (like websites, dates, locations) that make it easy for listeners to take the desired action immediately after the speech."
@@ -1581,6 +1634,12 @@ const SpeechForm = () => {
           <Typography variant="body2" color="textSecondary" paragraph>
             Define the tone, style, and rhetorical elements of your speech.
           </Typography>
+
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>Tone Guidance:</strong> Different speech types call for different tones. For rallies, consider more emotional and energetic styles. For policy addresses, a more formal and measured approach often works better. Match your tone to both your audience expectations and the speech setting.
+            </Typography>
+          </Alert>
 
           <Grid container spacing={2}>
             {/* Overall Tone */}
@@ -1715,6 +1774,9 @@ const SpeechForm = () => {
                   Specify the approximate desired length of your speech (in words, minutes, or pages).
                 </Typography>
               </Box>
+              <Alert severity="info" sx={{ mb: 1 }}>
+                Note: The actual speech length depends on your input data. If limited information is provided about the candidate, audience, or topics, the generator may not reach your specified length target. Speech length is primarily an accommodation factor rather than an expansion factor.
+              </Alert>
               <TextField
                 id="speech-length"
                 label="Speech Length"
@@ -1739,6 +1801,12 @@ const SpeechForm = () => {
             Provide information about the context in which the speech will be delivered.
           </Typography>
 
+          <Alert severity="success" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>Context Matters:</strong> Adding current political climate and recent events makes your speech timely and relevant. The AI will use this information to reference appropriate events and tailor the speech to the current political landscape. Even brief contextual information can substantially improve speech quality.
+            </Typography>
+          </Alert>
+
           <Grid container spacing={2}>
             {/* Current Political Climate */}
             <Grid item xs={12}>
@@ -1753,6 +1821,7 @@ const SpeechForm = () => {
                 value={speechParams['political-climate']}
                 onChange={handleSpeechParamChange('political-climate')}
                 placeholder="e.g., Polarized electorate, Recent government controversies, Rising economic concerns..."
+                promptPlaceholder="Analyze the current political climate as it relates to this speech context..."
                 rows={2}
                 contextInfo="The current political climate describes the prevailing political conditions, public sentiment, and key issues that form the backdrop for your speech. This helps tailor content to current realities."
                 systemPrompt="You are a political analyst specializing in current affairs. Provide a concise assessment of the current political climate that would be relevant to this speech. Focus on major trends, voter sentiments, and contextual factors that should influence the speech's messaging and tone."
@@ -1772,6 +1841,7 @@ const SpeechForm = () => {
                 value={speechParams['recent-events']}
                 onChange={handleSpeechParamChange('recent-events')}
                 placeholder="e.g., Recent policy announcement, Natural disaster, International event..."
+                promptPlaceholder="Identify specific recent events that would be important to reference in this speech..."
                 rows={2}
                 contextInfo="Recent events are specific occurrences that should be addressed in your speech to make it timely and relevant. These can include legislation, news events, or local developments."
                 systemPrompt="You are a political communications advisor tracking current events. Suggest specific recent events or developments that would be important to reference in this speech. Include a mix of political, economic, social, or local events that would resonate with the target audience and connect to the speech's themes."
@@ -1834,6 +1904,12 @@ const SpeechForm = () => {
             Select and customize persuasion techniques to make your speech more effective.
           </Typography>
 
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>Why This Matters:</strong> Persuasion techniques can significantly increase the impact of your speech. Choose techniques that align with your audience's values and concerns for maximum effectiveness. The AI can suggest techniques based on your candidate and audience profiles.
+            </Typography>
+          </Alert>
+
           <PersuasionTechniqueSelector
             candidateForm={candidateForm || {}}
             speechParams={speechParams || {}}
@@ -1865,7 +1941,7 @@ const SpeechForm = () => {
               }
               label="Enable RAG (Retrieval-Augmented Generation)"
             />
-            <Tooltip title="When enabled, the system will search for relevant information about the candidate and political party to enhance the speech generation.">
+            <Tooltip title="When enabled, the system will search for relevant information about the candidate and political party to enhance the speech generation with real-world facts and context. This makes speeches more factually accurate and current. Recommended for most cases.">
               <IconButton size="small">
                 <InfoIcon fontSize="small" />
               </IconButton>
@@ -1886,6 +1962,12 @@ const SpeechForm = () => {
               </IconButton>
             </Tooltip>
           </Box>
+          
+          <Alert severity="success" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>What Happens Next:</strong> When you click "Generate Speech," our AI will create a customized speech based on your inputs. Generation typically takes 60-120 seconds. Once complete, you'll be able to view, edit, analyze, translate, and download your speech in various formats.
+            </Typography>
+          </Alert>
           
           <Box display="flex" justifyContent="center">
             <Button 
