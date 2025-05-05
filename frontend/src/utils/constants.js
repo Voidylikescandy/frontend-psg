@@ -22,8 +22,12 @@ export const ADMIN_USER = {
 };
 
 // Azure Translator API Configuration
-export const AZURE_TRANSLATOR_API_KEY = 'uxNDQpNEItnMD260MmXVB1rT3fhj5SB44gUvQz1BcR6c4szdBx0mJQQJ99BDACGhslBXJ3w3AAAbACOGUMsV';
-export const AZURE_TRANSLATOR_REGION = 'centralindia';
+export const AZURE_TRANSLATOR_API_KEY = process.env.REACT_APP_AZURE_TRANSLATOR_API_KEY || '';
+export const AZURE_TRANSLATOR_REGION = process.env.REACT_APP_AZURE_TRANSLATOR_REGION || 'centralindia';
+
+// API Keys for external services
+export const SAPLING_API_KEY = process.env.REACT_APP_SAPLING_API_KEY || '';
+export const GROQ_API_KEY = process.env.REACT_APP_GROQ_API_KEY || '';
 
 // Indian Language Options for Translation
 export const TRANSLATION_LANGUAGE_OPTIONS = [
@@ -356,10 +360,6 @@ export const TEST_SPEECH = {
     "explanation": "The speech conveys a strong sense of pride, optimism, and forward-looking vision. It highlights historical greatness while emphasizing future growth, development, and opportunities. The language is uplifting, aiming to motivate and unite the people toward a collective vision of progress."
   }
 };
-
-// API Keys
-export const SAPLING_API_KEY = 'UQSWUUKJNU0XVC1JLK257YULHAU7DG1W';
-export const GROQ_API_KEY = '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';
 
 // Add this along with other exported constants
 export const PERSUASION_TECHNIQUE_OPTIONS = [
