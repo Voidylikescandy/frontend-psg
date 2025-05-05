@@ -8,7 +8,7 @@ A comprehensive web application that generates personalized political speeches u
 
 1. Clone the repository to your local machine:
    ```
-   git clone https://github.com/your-username/frontend-psg.git
+   git clone https://github.com/Voidylikescandy/frontend-psg.git
    cd frontend-psg
    ```
 
@@ -28,15 +28,30 @@ A comprehensive web application that generates personalized political speeches u
 
 4. Create environment variables file (`.env`) in the root directory with the following keys:
    ```
-   SERPER_API_KEY=your_serper_api_key
-   OPENAI_API=your_openai_api_key
+    OPENAI_API=key
+    SERPER_API_KEY=key
+    EMAIL_USER=mail
+    EMAIL_PASSWORD=password
+    EMAIL_FROM=from
+   ```
+
+5. Create environment variables file (`.env`) in the frontend directory with the following keys:
+   ```
+   cd frontend
+   ```
+   Create a file named `.env`:
+   ```
+   REACT_APP_AZURE_TRANSLATOR_API_KEY=your_azure_translator_key
+   REACT_APP_AZURE_TRANSLATOR_REGION=your_azure_region
+   REACT_APP_SAPLING_API_KEY=your_sapling_api_key
+   REACT_APP_GROQ_API_KEY=your_groq_api_key
    ```
 
 ### Linux/macOS Setup
 
 1. Clone the repository to your local machine:
    ```
-   git clone https://github.com/your-username/frontend-psg.git
+   git clone https://github.com/Voidylikescandy/frontend-psg.git
    cd frontend-psg
    ```
 
@@ -56,8 +71,23 @@ A comprehensive web application that generates personalized political speeches u
 
 4. Create environment variables file (`.env`) in the root directory with the following keys:
    ```
-   SERPER_API_KEY=your_serper_api_key
-   OPENAI_API=your_openai_api_key
+    OPENAI_API=key
+    SERPER_API_KEY=key
+    EMAIL_USER=mail
+    EMAIL_PASSWORD=password
+    EMAIL_FROM=from
+   ```
+
+5. Create environment variables file (`.env`) in the frontend directory with the following keys:
+   ```
+   cd frontend
+   ```
+   Create a file named `.env`:
+   ```
+   REACT_APP_AZURE_TRANSLATOR_API_KEY=your_azure_translator_key
+   REACT_APP_AZURE_TRANSLATOR_REGION=your_azure_region
+   REACT_APP_SAPLING_API_KEY=your_sapling_api_key
+   REACT_APP_GROQ_API_KEY=your_groq_api_key
    ```
 
 ## Running the Application
