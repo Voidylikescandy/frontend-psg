@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import LoadTemplates from './pages/LoadTemplates';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import EmailVerification from './pages/EmailVerification';
 import Profile from './pages/Profile';
 import { AuthProvider, useAuth } from './utils/authContext';
 
@@ -60,6 +61,7 @@ function AppRoutes() {
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<EmailVerification />} />
       
       {/* Protected routes */}
       <Route 

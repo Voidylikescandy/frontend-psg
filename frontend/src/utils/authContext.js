@@ -137,6 +137,13 @@ export const AuthProvider = ({ children }) => {
       return userData;
     } catch (err) {
       setLoading(false);
+      
+      // Special handling for verification errors
+      if (err.response && err.response.status === 403 && err.response.data.needs_verification) {
+        setError("Please verify your email before logging in");
+        throw err; // Rethrow to allow component to handle verification redirect
+      }
+      
       const errorMessage = err.response?.data?.error || 'Login failed';
       setError(errorMessage);
       throw new Error(errorMessage);

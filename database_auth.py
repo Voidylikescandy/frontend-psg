@@ -6,10 +6,27 @@ import jwt
 from datetime import datetime, timedelta
 import json
 from logger import logger
+import random
+import smtplib
+from email.message import EmailMessage
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Database configuration
 DB_FILE = "auth.db"
 SECRET_KEY = secrets.token_hex(32)  # Generate a random secret key for JWT
+
+# Email configuration
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# These will be loaded from .env file
+EMAIL_USER = os.environ.get("EMAIL_USER", "")
+EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")
+EMAIL_FROM = os.environ.get("EMAIL_FROM", "no-reply@speechgenerator.com")
 
 def get_db_connection():
     """Create a connection to the SQLite database"""
@@ -29,6 +46,7 @@ def init_db():
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
+        is_verified BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -46,9 +64,59 @@ def init_db():
     )
     ''')
     
+    # Create email verification table for OTP codes
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS email_verification (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        email TEXT NOT NULL,
+        otp TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )
+    ''')
+    
     conn.commit()
     conn.close()
     logger.info("Auth database initialized successfully")
+
+def generate_otp():
+    """Generate a 6-digit OTP"""
+    return ''.join(random.choices('0123456789', k=6))
+
+def send_verification_email(email, otp):
+    """Send verification email with OTP"""
+    # Check if we have email credentials
+    if not EMAIL_USER or not EMAIL_PASSWORD:
+        # Development mode - just log the OTP
+        logger.warning(f"Email credentials not configured. DEVELOPMENT MODE: verification code for {email} is: {otp}")
+        return True
+    
+    try:
+        msg = EmailMessage()
+        msg.set_content(f"""
+        Your verification code is: {otp}
+        
+        This code will expire in 10 minutes.
+        
+        If you did not request this code, please ignore this email.
+        """)
+        
+        msg['Subject'] = 'Verify Your Email Address'
+        msg['From'] = EMAIL_FROM
+        msg['To'] = email
+        
+        with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Verification email sent to {email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send verification email: {str(e)}")
+        return False
 
 def register_user(username, email, password):
     """Register a new user"""
@@ -59,17 +127,33 @@ def register_user(username, email, password):
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Insert new user with hashed password
+        # Insert new user with hashed password and is_verified=0
         cursor.execute(
-            "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+            "INSERT INTO users (username, email, password, is_verified) VALUES (?, ?, ?, 0)",
             (username, email, hashed_password.decode('utf-8'))
         )
         
+        user_id = cursor.lastrowid
+        
+        # Generate OTP
+        otp = generate_otp()
+        expires_at = datetime.utcnow() + timedelta(minutes=10)
+        
+        # Save OTP to database
+        cursor.execute(
+            "INSERT INTO email_verification (user_id, email, otp, expires_at) VALUES (?, ?, ?, ?)",
+            (user_id, email, otp, expires_at.strftime('%Y-%m-%d %H:%M:%S'))
+        )
+        
         conn.commit()
+        
+        # Send verification email
+        send_verification_email(email, otp)
+        
         conn.close()
         
         logger.info(f"User registered successfully: {username}")
-        return True
+        return {"success": True, "user_id": user_id}
     except sqlite3.IntegrityError as e:
         # Handle unique constraint violations
         error_msg = str(e)
@@ -85,6 +169,95 @@ def register_user(username, email, password):
     except Exception as e:
         logger.error(f"User registration failed: {str(e)}")
         return {"error": f"Registration failed: {str(e)}"}
+
+def verify_email(email, otp):
+    """Verify user's email with OTP"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if OTP exists and is valid
+        cursor.execute("""
+            SELECT ev.*, u.id as user_id
+            FROM email_verification ev
+            JOIN users u ON ev.user_id = u.id
+            WHERE ev.email = ? AND ev.otp = ? AND ev.expires_at > ?
+            ORDER BY ev.created_at DESC LIMIT 1
+        """, (email, otp, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
+        
+        verification = cursor.fetchone()
+        
+        if not verification:
+            conn.close()
+            return {"error": "Invalid or expired verification code"}
+        
+        # Update user as verified
+        cursor.execute(
+            "UPDATE users SET is_verified = 1 WHERE id = ?",
+            (verification['user_id'],)
+        )
+        
+        # Delete all verification entries for this user
+        cursor.execute(
+            "DELETE FROM email_verification WHERE user_id = ?",
+            (verification['user_id'],)
+        )
+        
+        conn.commit()
+        conn.close()
+        
+        logger.info(f"Email verified successfully: {email}")
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Email verification failed: {str(e)}")
+        return {"error": f"Verification failed: {str(e)}"}
+
+def resend_verification(email):
+    """Resend verification email"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get user by email
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        
+        if not user:
+            conn.close()
+            return {"error": "User not found"}
+        
+        if user['is_verified'] == 1:
+            conn.close()
+            return {"error": "Email already verified"}
+        
+        # Delete old verification codes
+        cursor.execute(
+            "DELETE FROM email_verification WHERE user_id = ?",
+            (user['id'],)
+        )
+        
+        # Generate new OTP
+        otp = generate_otp()
+        expires_at = datetime.utcnow() + timedelta(minutes=10)
+        
+        # Save new OTP to database
+        cursor.execute(
+            "INSERT INTO email_verification (user_id, email, otp, expires_at) VALUES (?, ?, ?, ?)",
+            (user['id'], email, otp, expires_at.strftime('%Y-%m-%d %H:%M:%S'))
+        )
+        
+        conn.commit()
+        
+        # Send verification email
+        send_verification_email(email, otp)
+        
+        conn.close()
+        
+        logger.info(f"Verification email resent to: {email}")
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Resend verification failed: {str(e)}")
+        return {"error": f"Failed to resend verification: {str(e)}"}
 
 def authenticate_user(username, password):
     """Authenticate a user and return a JWT token"""
@@ -104,6 +277,11 @@ def authenticate_user(username, password):
         if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
             logger.warning(f"Authentication failed: Invalid password for user - {username}")
             return {"error": "Invalid username or password"}
+        
+        # Check if user is verified
+        if user['is_verified'] == 0:
+            logger.warning(f"Authentication failed: Email not verified - {username}")
+            return {"error": "Please verify your email before logging in", "needs_verification": True, "email": user['email']}
         
         # Generate JWT token
         token_expiry = datetime.utcnow() + timedelta(days=1)

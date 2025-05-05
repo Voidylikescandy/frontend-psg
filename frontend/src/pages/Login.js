@@ -15,6 +15,8 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/authContext';
 import { ADMIN_USER } from '../utils/constants';
+import axios from 'axios';
+import API_URL from '../config';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +25,8 @@ const Login = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const { login, error, loading } = useAuth();
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -38,6 +42,11 @@ const Login = () => {
         ...formErrors,
         [name]: ''
       });
+    }
+    
+    // Reset verification state when user changes input
+    if (needsVerification) {
+      setNeedsVerification(false);
     }
   };
 
@@ -71,8 +80,17 @@ const Login = () => {
       navigate('/');
     } catch (err) {
       console.error('Login failed:', err);
-      // Error is handled by the auth context
+      // Check if the error is due to unverified email
+      if (err.response && err.response.status === 403 && err.response.data.needs_verification) {
+        setNeedsVerification(true);
+        setVerificationEmail(err.response.data.email);
+      }
+      // Other errors are handled by the auth context
     }
+  };
+
+  const handleGoToVerification = () => {
+    navigate('/verify-email', { state: { email: verificationEmail } });
   };
 
   const useAdminCredentials = () => {
@@ -89,9 +107,24 @@ const Login = () => {
           Log In
         </Typography>
         
-        {error && (
+        {error && !needsVerification && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
+          </Alert>
+        )}
+        
+        {needsVerification && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Your email is not verified. Please verify your email before logging in.
+            <Box mt={1}>
+              <Button 
+                size="small" 
+                variant="outlined"
+                onClick={handleGoToVerification}
+              >
+                Verify Now
+              </Button>
+            </Box>
           </Alert>
         )}
         

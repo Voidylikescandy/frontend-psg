@@ -495,14 +495,6 @@ const SpeechAnalysis = () => {
                             <TableCell>{statistics.sentences}</TableCell>
                           </TableRow>
                           <TableRow>
-                            <TableCell><b>Reading Time</b></TableCell>
-                            <TableCell>
-                              {statistics.reading_time_min > 1 
-                                ? `${statistics.reading_time_min} minutes` 
-                                : `${statistics.reading_time_sec} seconds`}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
                             <TableCell><b>Difficult Words</b></TableCell>
                             <TableCell>{statistics.readability_scores.difficult_words}</TableCell>
                           </TableRow>

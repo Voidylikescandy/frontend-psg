@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 from logger import logger
 from llm import generate_response
-from database_auth import register_user, authenticate_user, verify_token, logout_user
+from database_auth import register_user, authenticate_user, verify_token, logout_user, verify_email, resend_verification
 from functools import wraps
 
 app = Flask(__name__)
@@ -55,9 +55,52 @@ def register():
         if isinstance(result, dict) and 'error' in result:
             return jsonify(result), 400
         
-        return jsonify({'message': 'User registered successfully'}), 201
+        return jsonify({'message': 'User registered successfully. Please check your email for verification code.'}), 201
     except Exception as e:
         logger.error(f"Error in register endpoint: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/verify-email', methods=['POST'])
+def verify_email_route():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        otp = data.get('otp')
+        
+        # Validate input
+        if not email or not otp:
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Verify email
+        result = verify_email(email, otp)
+        
+        if 'error' in result:
+            return jsonify(result), 400
+        
+        return jsonify({'message': 'Email verified successfully'}), 200
+    except Exception as e:
+        logger.error(f"Error in verify-email endpoint: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/resend-otp', methods=['POST'])
+def resend_otp():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        # Validate input
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        # Resend verification email
+        result = resend_verification(email)
+        
+        if 'error' in result:
+            return jsonify(result), 400
+        
+        return jsonify({'message': 'Verification code sent successfully'}), 200
+    except Exception as e:
+        logger.error(f"Error in resend-otp endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -75,7 +118,11 @@ def login():
         result = authenticate_user(username, password)
         
         if 'error' in result:
-            return jsonify(result), 401
+            status_code = 401
+            # If user needs verification, return 403 instead of 401
+            if 'needs_verification' in result and result['needs_verification']:
+                status_code = 403
+            return jsonify(result), status_code
         
         return jsonify(result), 200
     except Exception as e:

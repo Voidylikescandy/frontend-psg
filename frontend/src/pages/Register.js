@@ -86,17 +86,16 @@ const Register = () => {
     }
 
     try {
-      await register(
+      const result = await register(
         formData.username, 
         formData.email, 
         formData.password
       );
       
-      setSuccessMessage('Registration successful! Redirecting to login...');
+      setSuccessMessage('Registration successful! Please verify your email.');
       
-      // Redirect to login after a short delay
       setTimeout(() => {
-        navigate('/login');
+        navigate('/verify-email', { state: { email: formData.email } });
       }, 2000);
       
     } catch (err) {
