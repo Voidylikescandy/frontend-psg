@@ -45,6 +45,7 @@ A comprehensive web application that generates personalized political speeches u
    REACT_APP_AZURE_TRANSLATOR_REGION=your_azure_region
    REACT_APP_SAPLING_API_KEY=your_sapling_api_key
    REACT_APP_GROQ_API_KEY=your_groq_api_key
+   REACT_APP_API_URL=your_backend_url
    ```
 
 ### Linux/macOS Setup
@@ -88,6 +89,7 @@ A comprehensive web application that generates personalized political speeches u
    REACT_APP_AZURE_TRANSLATOR_REGION=your_azure_region
    REACT_APP_SAPLING_API_KEY=your_sapling_api_key
    REACT_APP_GROQ_API_KEY=your_groq_api_key
+   REACT_APP_API_URL=your_backend_url
    ```
 
 ## Running the Application
