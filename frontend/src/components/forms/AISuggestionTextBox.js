@@ -253,7 +253,7 @@ IMPORTANT FORMATTING INSTRUCTIONS:
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
               Context Information:
             </Typography>
-            <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.default' }}>
+            <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.default', maxHeight: '200px', overflowY: 'auto' }}>
               <Typography variant="body2">{contextInfo}</Typography>
             </Paper>
           </Box>
@@ -318,22 +318,39 @@ IMPORTANT FORMATTING INSTRUCTIONS:
                   p: 3,
                   borderRadius: 2,
                   bgcolor: 'rgba(255, 255, 255, 0.9)',
-                  boxShadow: 3
+                  boxShadow: 3,
+                  zIndex: 1
                 }}>
                   <CircularProgress size={40} sx={{ mb: 2 }} />
                   <Typography variant="body2">Generating content...</Typography>
                 </Box>
               )}
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  whiteSpace: 'pre-wrap',
-                  color: generatedText ? 'text.primary' : 'text.disabled',
-                  fontStyle: generatedText ? 'normal' : 'italic'
+              <TextField
+                multiline
+                fullWidth
+                variant="standard"
+                value={generatedText}
+                onChange={(e) => setGeneratedText(e.target.value)}
+                placeholder="AI-generated content will appear here..."
+                disabled={isGenerating}
+                InputProps={{ disableUnderline: true }}
+                sx={{
+                  '.MuiInputBase-root': {
+                    height: '100%',
+                    padding: 0,
+                  },
+                  '.MuiInputBase-input': {
+                    height: '100%',
+                    whiteSpace: 'pre-wrap',
+                    color: generatedText ? 'text.primary' : 'text.disabled',
+                    fontStyle: generatedText ? 'normal' : 'italic',
+                    fontFamily: 'inherit',
+                    fontSize: 'inherit',
+                    lineHeight: 'inherit',
+                    padding: 0,
+                  }
                 }}
-              >
-                {generatedText || 'AI-generated content will appear here...'}
-              </Typography>
+              />
             </Paper>
           </Box>
         </DialogContent>
