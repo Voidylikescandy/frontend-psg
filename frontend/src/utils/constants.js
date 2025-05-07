@@ -48,6 +48,7 @@ export const POLITICAL_PARTY_OPTIONS = [
   { value: 'Aam Aadmi Party', label: 'Aam Aadmi Party' },
   { value: 'Bahujan Samaj Party', label: 'Bahujan Samaj Party' },
   { value: 'Bharatiya Janata Party', label: 'Bharatiya Janata Party' },
+  { value: 'Telugu Desam Party', label: 'Telugu Desam Party' },
   { value: 'other', label: 'Other Party' },
 ];
 
@@ -105,7 +106,11 @@ export const CANDIDATES_BY_PARTY = {
     { value: 'Shri Brajesh Pathak', label: 'Shri Brajesh Pathak' },
     { value: 'Shri Pushkar Singh Dhami', label: 'Shri Pushkar Singh Dhami' },
   ],
-
+  'Telugu Desam Party': [
+    { value: 'Shri N. Chandrababu Naidu', label: 'Shri N. Chandrababu Naidu' },
+    { value: 'Yanamala Ramakrishna', label: 'Yanamala Ramakrishna' },
+    
+  ],
 };
 
 // Candidate to Office mapping
@@ -159,7 +164,8 @@ export const CANDIDATE_OFFICE_MAPPING = {
   'Shri Brajesh Pathak': 'Deputy Chief Minister, Uttar Pradesh',
   'Shri Pushkar Singh Dhami': 'Chief Minister, Uttarakhand',
 
-
+  'Shri N. Chandrababu Naidu': 'Chief Minister, Andhra Pradesh',
+  'Yanamala Ramakrishna': 'Minister of Finance, Planning, Commercial Taxes and Legislative Affairs of the State, Andhra Pradesh',
 };
 
 // Candidate to Bio mapping
@@ -216,7 +222,8 @@ export const CANDIDATE_BIO_MAPPING = {
   'Shri Brajesh Pathak': '',
   'Shri Pushkar Singh Dhami': '',
 
-  
+  'Shri N. Chandrababu Naidu': `Nara Chandrababu Naidu commonly known as CBN, is an Indian politician who is currently serving as the 13th Chief Minister of Andhra Pradesh. He holds the record of longest-serving Chief Minister in the political history of Telugu states. He is the national president of the Telugu Desam Party (TDP)\n\nDuring his two previous terms as Chief Minister, Naidu's public image was that of a visionary economic reformer and proponent of information technology–driven economic growth. His policies brought modernisation and significant investments, particularly in Hyderabad, where he directed the founding of HITEC City, Genome Valley, HITEX Exhibition and the Financial District. He also established the Hyderabad Multi-Modal Transport System (MMTS), which was inaugurated during his tenure to improve urban mobility. Additionally, he initiated major infrastructure projects such as the Hyderabad Outer Ring Road and laid the groundwork for the Rajiv Gandhi International Airport. He also had a role in national politics, first as the convener of the United Front in 1996. He supported the Bharatiya Janata Party (BJP)-led National Democratic Alliance (NDA) after the 1999 Lok Sabha elections, in which TDP won 29 seats, enhancing Naidu's reputation as a nationally prominent politician. In 2014, Naidu returned as Chief Minister, winning in the now-residuary (due to bifurcation) Andhra Pradesh.`,
+  'Yanamala Ramakrishna': `Yanamala Ramakrishnudu is a senior politician from Andhra Pradesh. He was inducted into the Council of Ministers formed in 2014 under the leadership of Chandrababu Naidu. He was a member of the Legislative Council and remained the Leader of the Main Opposition (TDP) until the division of the Legislative Council of Samaikyandhra Pradesh.\n\nHe won all the elections as an MLA from the elections held after the formation of the TDP until the 2004 elections. He lost in 2009 and was elected as an MLC in 2013. He served as a minister and speaker when the Telugu Desam Party was in power, and as the PAC chairman when it was not in power.\n\nHe won the Tuni MLA seat in East Godavari district in 1983 and held the charge of the Law and Municipal Administration departments in NTR's first cabinet. He served as a minister between 1985-89, as the Chairman of the Public Accounts Committee from 1989-94, and as the Speaker of the Legislative Assembly from 1995-99.\n\nHe was the Speaker when Chandrababu took over as the Chief Minister after deposing NTR. He was the Finance Minister from 1999-2003. He again held the position of Chairman of the Public Accounts Committee between 2004-08.`,
 };
 
 export const EDUCATION_LEVEL_OPTIONS = [

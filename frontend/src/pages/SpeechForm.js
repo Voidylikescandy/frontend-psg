@@ -37,8 +37,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import TranslateIcon from '@mui/icons-material/Translate';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import DownloadIcon from '@mui/icons-material/Download';
 import { jsPDF } from 'jspdf';
-import { generateSpeech } from '../utils/api';
+import { generateSpeech, getFormattedPrompt } from '../utils/api';
 import TextInput from '../components/forms/TextInput';
 import TextAreaWithWordLimit from '../components/forms/TextAreaWithWordLimit';
 import MultiSelectDropdown from '../components/forms/MultiSelectDropdown';
@@ -128,6 +129,9 @@ const SpeechForm = () => {
     key_themes: [],
     sentiment: { category: '', explanation: '' }
   });
+
+  // Add a new state variable for downloading prompt
+  const [promptLoading, setPromptLoading] = useState(false);
 
   // Clear form data when coming from home page
   useEffect(() => {
@@ -837,6 +841,70 @@ const SpeechForm = () => {
   const availableCandidates = candidateForm['political-party'] && !isOtherPartySelected 
     ? CANDIDATES_BY_PARTY[candidateForm['political-party']] || []
     : [];
+
+  // Add a new function to download the formatted prompt
+  const handleDownloadPrompt = async () => {
+    if (!candidateProfile) {
+      // Try to save the profile data first if it hasn't been saved
+      updateCandidateProfile(candidateForm);
+      
+      if (!candidateProfile) {
+        setError('Please fill out the candidate profile section first');
+        return;
+      }
+    }
+
+    try {
+      setPromptLoading(true);
+      setError('');
+      
+      // Combine candidate profile and speech parameters
+      const requestData = {
+        ...candidateProfile,
+        ...speechParams,
+        // Format policy points
+        'policy-points': formatPolicyPoints(speechParams['policy-points']),
+        // Format story elements
+        'story-elements': formatStoryElements(),
+        // Format rhetorical devices
+        'rhetorical-devices': formatRhetoricalDevices(speechParams['rhetorical-devices']),
+        // Format persuasion techniques with full descriptions
+        'persuasion-techniques': formatPersuasionTechniquesWithDescriptions(speechParams['persuasion-techniques']),
+        // Add enable_rag parameter
+        'enable_rag': enableRAG
+      };
+      
+      // Set the actual speech-type value from other-speech-type if 'other' is selected
+      if (requestData['speech-type'] === 'other' && requestData['other-speech-type']) {
+        requestData['speech-type'] = requestData['other-speech-type'];
+      }
+      
+      // Remove the other-speech-type before sending
+      delete requestData['other-speech-type'];
+      
+      // Call the API to get the formatted prompt
+      const formattedPrompt = await getFormattedPrompt(requestData);
+      
+      // Download the formatted prompt as a text file
+      const element = document.createElement('a');
+      const file = new Blob([formattedPrompt], {type: 'text/plain'});
+      element.href = URL.createObjectURL(file);
+      element.download = `speech_prompt_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    } catch (err) {
+      // Handle backend errors
+      if (err.error && err.message) {
+        setError(`${err.error}: ${err.message}`);
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
+      console.error('Error:', err);
+    } finally {
+      setPromptLoading(false);
+    }
+  };
 
   return (
     <>
@@ -1979,6 +2047,17 @@ const SpeechForm = () => {
               disabled={loading || !candidateProfile || !speechParams['speech-type']}
             >
               {loading ? 'Generating...' : 'Generate Speech'}
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={promptLoading ? <CircularProgress size={20} color="inherit" /> : <DownloadIcon />}
+              onClick={handleDownloadPrompt}
+              size="large"
+              disabled={promptLoading || !candidateProfile || !speechParams['speech-type']}
+              sx={{ ml: 2 }}
+            >
+              {promptLoading ? 'Downloading...' : 'Download Prompt'}
             </Button>
           </Box>
         </Box>

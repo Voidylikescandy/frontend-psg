@@ -82,6 +82,46 @@ export const generateSpeech = async (candidateData, speechParams = {}) => {
   }
 };
 
+export const getFormattedPrompt = async (candidateData, speechParams = {}) => {
+  try {
+    // Combine candidate profile data with speech parameters
+    const requestData = {
+      ...candidateData,
+      ...speechParams,
+      get_formatted_prompt: true // Flag to indicate we want the formatted prompt
+    };
+    
+    console.log('Fetching formatted prompt from backend:', requestData);
+    
+    const response = await axios.post(`${API_URL}/api/get-formatted-prompt`, requestData);
+    
+    // Check if response contains an error field
+    if (response.data.error) {
+      const error = new Error(response.data.message);
+      error.error = response.data.error;
+      throw error;
+    }
+    
+    return response.data.formatted_prompt;
+  } catch (error) {
+    console.error('Error getting formatted prompt:', error);
+    // If it's an axios error with response, use the backend error
+    if (error.response && error.response.data) {
+      const apiError = new Error(error.response.data.message || 'Failed to get formatted prompt');
+      apiError.error = error.response.data.error || 'ERR_API_FAILURE';
+      throw apiError;
+    }
+    // If it's our custom error from above, pass it through
+    if (error.error && error.message) {
+      throw error;
+    }
+    // For other errors, create a generic error
+    const genericError = new Error('Failed to connect to the server. Please try again.');
+    genericError.error = 'ERR_API_FAILURE';
+    throw genericError;
+  }
+};
+
 export const translateSpeech = async (text, targetLanguage) => {
   try {
     // Azure Translator API endpoint
@@ -136,7 +176,8 @@ export const translateSpeech = async (text, targetLanguage) => {
 // Create a named API object before exporting
 const apiService = {
   generateSpeech,
-  translateSpeech
+  translateSpeech,
+  getFormattedPrompt
 };
 
 export default apiService; 

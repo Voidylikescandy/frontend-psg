@@ -179,6 +179,30 @@ def generate_speech():
         logger.error("Exception in generate_speech: %s", str(e))
         return jsonify({"error": str(e), "status": "error"}), 500
 
+@app.route('/api/get-formatted-prompt', methods=['POST'])
+@token_required
+def get_formatted_prompt():
+    try:
+        data = request.get_json()
+        
+        # Log received data for debugging
+        logger.info("Received data for formatted prompt: %s", data)
+        
+        # Import substitute_template here to format the prompt
+        from text_processing import substitute_template
+        
+        # Format the data into a prompt
+        formatted_prompt = substitute_template(data)
+        
+        # Return the formatted prompt
+        return jsonify({
+            "status": "success",
+            "formatted_prompt": formatted_prompt
+        })
+    except Exception as e:
+        logger.error("Exception in get_formatted_prompt: %s", str(e))
+        return jsonify({"error": "ERR_PROMPT_FAILED", "message": str(e), "status": "error"}), 500
+
 @app.route('/')
 def index():
     return jsonify({"message": "Political Speech Generator API is running"})
