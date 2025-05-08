@@ -25,9 +25,9 @@ export const TEST_TEMPLATES = [
     template: {
       // Candidate Profile
       "candidate-name": "Shri Rahul Gandhi",
-      "political-party": "other",
-      "other-party": "Indian National Congress",
-      "office-sought": "",
+      "political-party": "Indian National Congress",
+      "other-party": "",
+      "office-sought": "Member of Parliament",
       "brief-bio": "As a seasoned political leader with over 15 years of experience in public service, Rahul Gandhi has demonstrated a deep commitment to economic reform, social justice, and democratic values. Beginning his political career in 2004 as an MP from Amethi, he has consistently championed the causes of farmers, youth, and marginalized communities across India. His educational background includes degrees from prestigious international institutions, providing him with a global perspective on governance and policy-making.",
       "key-strengths": "Education, Healthcare, Agriculture, Social Justice, Economy",
       

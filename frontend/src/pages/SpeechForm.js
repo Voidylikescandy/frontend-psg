@@ -928,87 +928,40 @@ const SpeechForm = () => {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={2}>
-          {/* Political Party Dropdown */}
+          {/* Political Party Input Field (replacing dropdown) */}
           <Grid item xs={12} md={6}>
             <Box mb={1}>
               <Typography variant="body2" color="textSecondary">
-                Select the political party the candidate represents.
+                Enter the political party the candidate represents.
               </Typography>
             </Box>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="political-party-label">Political Party</InputLabel>
-              <Select
-                labelId="political-party-label"
-                id="political-party"
-                value={candidateForm['political-party']}
-                label="Political Party"
-                onChange={handlePartyChange}
-              >
-                {POLITICAL_PARTY_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <TextInput
+              id="political-party"
+              label="Political Party"
+              value={candidateForm['political-party']}
+              onChange={handleChange('political-party')}
+              placeholder="Enter political party name"
+              required
+            />
           </Grid>
           
-          {/* Other Party Text Field (shown only when 'other' is selected) */}
-          {isOtherPartySelected && (
-            <Grid item xs={12} md={6}>
-              <Box mb={1}>
-                <Typography variant="body2" color="textSecondary">
-                  Enter the name of the political party.
-                </Typography>
-              </Box>
-              <TextInput
-                id="other-party"
-                label="Party Name"
-                value={candidateForm['other-party']}
-                onChange={handleChange('other-party')}
-                placeholder="Enter political party name"
-                required
-              />
-            </Grid>
-          )}
+          {/* Other Party Text Field - Hidden since we now directly input the party name */}
           
-          {/* Candidate Name (dropdown or text field based on selection) */}
+          {/* Candidate Name Input Field (replacing dropdown) */}
           <Grid item xs={12} md={6}>
             <Box mb={1}>
               <Typography variant="body2" color="textSecondary">
-                {!isOtherPartySelected && candidateForm['political-party'] 
-                  ? "Select the candidate from the list" 
-                  : "Enter the full name of the candidate"}
+                Enter the full name of the candidate
               </Typography>
             </Box>
-            {!isOtherPartySelected && candidateForm['political-party'] && availableCandidates.length > 0 ? (
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="candidate-name-label">Candidate Name</InputLabel>
-                <Select
-                  labelId="candidate-name-label"
-                  id="candidate-name"
-                  value={candidateForm['candidate-name']}
-                  label="Candidate Name"
-                  onChange={handleCandidateChange}
-                  required
-                >
-                  {availableCandidates.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ) : (
-              <TextInput
-                id="candidate-name"
-                label="Name"
-                value={candidateForm['candidate-name']}
-                onChange={handleChange('candidate-name')}
-                placeholder="Enter candidate's full name"
-                required
-              />
-            )}
+            <TextInput
+              id="candidate-name"
+              label="Name"
+              value={candidateForm['candidate-name']}
+              onChange={handleChange('candidate-name')}
+              placeholder="Enter candidate's full name"
+              required
+            />
           </Grid>
           
           <Grid item xs={12}>
