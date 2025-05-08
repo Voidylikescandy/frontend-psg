@@ -30,56 +30,72 @@ EMAIL_FROM = os.environ.get("EMAIL_FROM", "no-reply@speechgenerator.com")
 
 def get_db_connection():
     """Create a connection to the SQLite database"""
-    conn = sqlite3.connect(DB_FILE)
+    # Add a timeout parameter to wait if the database is locked
+    # Default timeout is 5 seconds
+    conn = sqlite3.connect(DB_FILE, timeout=30.0)
     conn.row_factory = sqlite3.Row  # Return rows as dictionaries
     return conn
 
 def init_db():
     """Initialize the database with tables"""
     logger.info("Initializing auth database...")
-    conn = get_db_connection()
-    
-    # Create users table with fields compatible with PostgreSQL migration
-    conn.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        is_verified BOOLEAN DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    ''')
-    
-    # Create sessions table for keeping track of JWT tokens
-    conn.execute('''
-    CREATE TABLE IF NOT EXISTS sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        token TEXT NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id)
-    )
-    ''')
-    
-    # Create email verification table for OTP codes
-    conn.execute('''
-    CREATE TABLE IF NOT EXISTS email_verification (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        email TEXT NOT NULL,
-        otp TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expires_at TIMESTAMP NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id)
-    )
-    ''')
-    
-    conn.commit()
-    conn.close()
-    logger.info("Auth database initialized successfully")
+    conn = None
+    try:
+        conn = get_db_connection()
+        
+        # Create users table with fields compatible with PostgreSQL migration
+        conn.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            is_verified BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        
+        # Create sessions table for keeping track of JWT tokens
+        conn.execute('''
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        ''')
+        
+        # Create email verification table for OTP codes
+        conn.execute('''
+        CREATE TABLE IF NOT EXISTS email_verification (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            email TEXT NOT NULL,
+            otp TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at TIMESTAMP NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        ''')
+        
+        conn.commit()
+        logger.info("Auth database initialized successfully")
+    except Exception as e:
+        logger.error(f"Error initializing database: {str(e)}")
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def generate_otp():
     """Generate a 6-digit OTP"""
@@ -120,6 +136,7 @@ def send_verification_email(email, otp):
 
 def register_user(username, email, password):
     """Register a new user"""
+    conn = None
     try:
         # Hash the password
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -150,8 +167,6 @@ def register_user(username, email, password):
         # Send verification email
         send_verification_email(email, otp)
         
-        conn.close()
-        
         logger.info(f"User registered successfully: {username}")
         return {"success": True, "user_id": user_id}
     except sqlite3.IntegrityError as e:
@@ -164,14 +179,36 @@ def register_user(username, email, password):
         else:
             error = "Registration failed due to a constraint violation"
             
+        # Rollback transaction
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+            
         logger.error(f"User registration failed: {error}")
         return {"error": error}
     except Exception as e:
+        # Rollback transaction
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+                
         logger.error(f"User registration failed: {str(e)}")
         return {"error": f"Registration failed: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def verify_email(email, otp):
     """Verify user's email with OTP"""
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -188,7 +225,6 @@ def verify_email(email, otp):
         verification = cursor.fetchone()
         
         if not verification:
-            conn.close()
             return {"error": "Invalid or expired verification code"}
         
         # Update user as verified
@@ -204,16 +240,30 @@ def verify_email(email, otp):
         )
         
         conn.commit()
-        conn.close()
         
         logger.info(f"Email verified successfully: {email}")
         return {"success": True}
     except Exception as e:
+        # Rollback transaction
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+                
         logger.error(f"Email verification failed: {str(e)}")
         return {"error": f"Verification failed: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def resend_verification(email):
     """Resend verification email"""
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -223,11 +273,9 @@ def resend_verification(email):
         user = cursor.fetchone()
         
         if not user:
-            conn.close()
             return {"error": "User not found"}
         
         if user['is_verified'] == 1:
-            conn.close()
             return {"error": "Email already verified"}
         
         # Delete old verification codes
@@ -251,16 +299,29 @@ def resend_verification(email):
         # Send verification email
         send_verification_email(email, otp)
         
-        conn.close()
-        
         logger.info(f"Verification email resent to: {email}")
         return {"success": True}
     except Exception as e:
+        # Rollback transaction
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+                
         logger.error(f"Resend verification failed: {str(e)}")
         return {"error": f"Failed to resend verification: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def authenticate_user(username, password):
     """Authenticate a user and return a JWT token"""
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -310,15 +371,28 @@ def authenticate_user(username, password):
             }
         }
         
-        conn.close()
         logger.info(f"User authenticated successfully: {username}")
         return auth_data
     except Exception as e:
+        # Rollback any uncommitted transactions
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
         logger.error(f"Authentication error: {str(e)}")
         return {"error": f"Authentication failed: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def verify_token(token):
     """Verify JWT token and return user data if valid"""
+    conn = None
     try:
         # Decode token
         payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -333,15 +407,11 @@ def verify_token(token):
         session = cursor.fetchone()
         
         if not session:
-            conn.close()
-            logger.warning("Token verification failed: Invalid or expired token")
             return {"error": "Invalid or expired token"}
         
         # Get user data
         cursor.execute("SELECT id, username, email FROM users WHERE id = ?", (payload['user_id'],))
         user = cursor.fetchone()
-        
-        conn.close()
         
         if not user:
             logger.warning(f"Token verification failed: User not found for id {payload['user_id']}")
@@ -362,9 +432,17 @@ def verify_token(token):
     except Exception as e:
         logger.error(f"Token verification error: {str(e)}")
         return {"error": f"Token verification failed: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 def logout_user(token):
     """Invalidate the user's token"""
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -374,7 +452,6 @@ def logout_user(token):
         conn.commit()
         
         deleted_count = cursor.rowcount
-        conn.close()
         
         if deleted_count > 0:
             logger.info("User logged out successfully")
@@ -383,8 +460,22 @@ def logout_user(token):
             logger.warning("Logout failed: Token not found")
             return {"error": "Token not found"}
     except Exception as e:
+        # Rollback transaction
+        if conn:
+            try:
+                conn.rollback()
+            except:
+                pass
+                
         logger.error(f"Logout error: {str(e)}")
         return {"error": f"Logout failed: {str(e)}"}
+    finally:
+        # Always close the connection
+        if conn:
+            try:
+                conn.close()
+            except:
+                pass
 
 # Initialize the database when this module is imported
 init_db() 
