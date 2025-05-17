@@ -176,7 +176,39 @@ The frontend will be available at `http://localhost:3000`.
 
 ## Technologies Used
 
-- **Backend**: Python, Flask, OpenAI API, LanceDB, BeautifulSoup
-- **Frontend**: React, Material-UI, Axios
-- **Authentication**: JWT-based token authentication
-- **Data Storage**: SQLite (auth), LanceDB (vector database) 
+### Core Technologies
+- **Backend**: Python 3.x, Flask, RESTful API architecture
+- **Frontend**: React.js, Material-UI component library
+- **Database**: SQLite (authentication), LanceDB (vector database for RAG)
+- **Authentication**: JWT-based token authentication with bcrypt password hashing
+
+### LLM & AI Components
+- **Primary LLM**: Qwen 3 235B model via DeepInfra API for speech generation
+- **Vector Embeddings**: BAAI/bge-small-en-v1.5 for semantic search capabilities
+- **RAG System**: Custom Retrieval-Augmented Generation implementation
+- **AI Suggestions**: Llama 4 model via Groq API for content suggestions in the UI
+
+### Data Retrieval & Processing
+- **Web Search**: Google Search integration via Serper API
+- **Web Scraping**: BeautifulSoup4 for extracting content from web pages
+- **Vector Database**: LanceDB for storing and retrieving document embeddings
+- **Text Processing**: LangChain text splitters for document chunking
+
+### Analysis & Enhancement
+- **Speech Analysis**: Sapling API for readability metrics and sentiment analysis
+- **Translation**: Azure Translator API for multilingual speech support
+- **Data Visualization**: Chart.js and React-ChartJS-2 for analytics visualization
+
+### Development Tools
+- **Package Management**: npm (frontend), pip (backend)
+- **Environment Management**: python-dotenv for configuration
+- **HTTP Client**: Axios for API communication
+- **CORS Support**: Flask-CORS for cross-origin resource sharing
+- **PDF Generation**: jsPDF for downloadable speech documents
+- **Spreadsheet Support**: XLSX for data export/import
+
+### Deployment & Infrastructure
+- **Version Control**: Git
+- **Environment Isolation**: Python virtual environments
+- **Logging**: Custom logging system with rotating file handlers
+- **Error Handling**: Comprehensive error tracking and reporting 
