@@ -9,7 +9,7 @@ SERPER_API_KEY = os.environ.get("SERPER_API_KEY", "")
 SERPER_API_HOST = "google.serper.dev"
 OPENAI_API = os.environ.get("OPENAI_API", "")
 MODEL_URL = "https://api.deepinfra.com/v1/openai"
-MODEL = "Qwen/Qwen3-235B-A22B"
+MODEL = "deepseek-ai/DeepSeek-V3"
 
 TEMPLATE = """
     candidate-name: {candidate-name}  
