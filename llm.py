@@ -83,7 +83,12 @@ def generate_response(data: dict) -> str:
             # tools=openai_tool_evaluation,
             # tool_choice='required',
             
-            temperature=0.1,
+            temperature=1.0,
+            # top_p=0.95,
+            # top_k=30,
+            # reasoning_effort="high",
+            # presence_penalty=0.5,
+            # frequency_penalty=0.5,
             response_format={"type":"json_object"}
         )
         logger.info("Successfully received response from OpenAI API")

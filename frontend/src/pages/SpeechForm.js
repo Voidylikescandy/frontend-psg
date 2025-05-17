@@ -62,7 +62,8 @@ import {
   RHETORICAL_DEVICES_OPTIONS,
   PRIMARY_OBJECTIVE_MAP,
   TEST_SPEECH,
-  PERSUASION_TECHNIQUE_OPTIONS
+  PERSUASION_TECHNIQUE_OPTIONS,
+  SPEECH_TYPE_MAPPING
 } from '../utils/constants';
 
 const SpeechForm = () => {
@@ -585,6 +586,12 @@ const SpeechForm = () => {
         requestData['speech-type'] = requestData['other-speech-type'];
       }
       
+      // Add speech type context from mapping if available
+      const speechType = requestData['speech-type'];
+      if (speechType && SPEECH_TYPE_MAPPING[speechType]) {
+        requestData['speech-type-context'] = SPEECH_TYPE_MAPPING[speechType];
+      }
+      
       // Remove the other-speech-type before sending
       delete requestData['other-speech-type'];
       
@@ -877,6 +884,12 @@ const SpeechForm = () => {
       // Set the actual speech-type value from other-speech-type if 'other' is selected
       if (requestData['speech-type'] === 'other' && requestData['other-speech-type']) {
         requestData['speech-type'] = requestData['other-speech-type'];
+      }
+      
+      // Add speech type context from mapping if available
+      const speechType = requestData['speech-type'];
+      if (speechType && SPEECH_TYPE_MAPPING[speechType]) {
+        requestData['speech-type-context'] = SPEECH_TYPE_MAPPING[speechType];
       }
       
       // Remove the other-speech-type before sending
@@ -1916,7 +1929,7 @@ const SpeechForm = () => {
 
         <Divider sx={{ mb: 3 }} />
         
-        {/* Persuasion Techniques Section */}
+        {/* Persuasion Techniques Section
         <Box mb={4}>
           <Typography variant="h5" gutterBottom>
             Persuasion Techniques
@@ -1941,7 +1954,7 @@ const SpeechForm = () => {
           />
         </Box>
 
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ mb: 3 }} /> */}
         
         <Box sx={{ mt: 4 }}>
           <Box mb={2}>

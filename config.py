@@ -9,7 +9,7 @@ SERPER_API_KEY = os.environ.get("SERPER_API_KEY", "")
 SERPER_API_HOST = "google.serper.dev"
 OPENAI_API = os.environ.get("OPENAI_API", "")
 MODEL_URL = "https://api.deepinfra.com/v1/openai"
-MODEL = "deepseek-ai/DeepSeek-V3"
+MODEL = "Qwen/Qwen3-235B-A22B"
 
 TEMPLATE = """
     candidate-name: {candidate-name}  
@@ -28,7 +28,8 @@ TEMPLATE = """
     primary-concerns: {primary-concerns}  
     existing-values: {existing-values} 
 
-    speech-type: {speech-type}  
+    speech-type: {speech-type} 
+    speech-type-context: {speech-type-context} 
     primary-objective: {primary-objective}  
     secondary-objective: {secondary-objective}  
     slogan: {slogan}  
@@ -48,8 +49,6 @@ TEMPLATE = """
     recent-events: {recent-events}  
     campaign-stage: {campaign-stage}  
     geographic-location: {geographic-location}  
-    persuasion-techniques: {persuasion-techniques}
-    persuasion-instructions: {persuasion-instructions}
 
     retrieved_info: {retrieved_info}   
 """
@@ -64,6 +63,7 @@ SYSTEMPROMPT = """
     ### Step 1: Analyze the Candidate Data
     - Extract and organize key information from the candidate data including:
     - Name, party affiliation, and office sought
+    - Extract the stories and ancedotes (very important)
     - Biographical information and professional background
     - Key strengths and policy positions
     - Target demographic and their primary concerns
@@ -92,7 +92,7 @@ SYSTEMPROMPT = """
     - Include cultural references relevant to the specified cultural context
 
     ### Step 4: Incorporate Persuasive Elements
-    - Use the "story-elements" to create compelling narratives
+    - Use the "story-elements" and anecdotes given by candidate to create compelling narratives else create a authentic and relatable story for the speech.
     - Reference recent events mentioned in the data
     - Address the concerns of the target demographic
     - Emphasize the candidate's strengths and unique selling points
@@ -106,7 +106,7 @@ SYSTEMPROMPT = """
 
     ## Speech Format Requirements
 
-    - The speech length is based on speech-length and must be a minimum of 5 minutes (500 words), 8 minutes means 800 words, 10 minutes mean 1000 words and so on.
+    - The speech length is based on speech-length and must be a minimum of 5 minutes (500 words), 8 minutes means 800 words, 10 minutes mean 1000 words and 	so on.
     - Strictly follow the language-dialect field provided to generate the speech
     - Format the speech with clear paragraph breaks and natural pauses
 
@@ -124,21 +124,22 @@ SYSTEMPROMPT = """
     ## Final Output
 
     Present the complete speech in a clean, readable format. The speech should:
+
     - Be the appropriate length for the specified time
-    - Authentically represent the candidate's voice and values
+    - Authentically represent the candidate's voice and values with story telling elements and anecdotes.
     - Address the primary and secondary objectives
     - Include natural transitions between sections
     - End with the specified call to action
     - Speech should be structured with proper paragraphs and line breaks. Use only '\n' or '\n\n', do not use escape characters to denote them, for example, don't use '\\n' or '\\n\\n'.
 
-    Before finalizing, review the speech to ensure it aligns with all the specified parameters and would
+    Before finalizing, review the speech to ensure it  has story telling elements, anecdotes and speech length specified ( minimum of 500 words) and aligns with all the specified parameters and would
     resonate with the target demographic.
 
     Write the speech directly, in first person, as if the candidate is speaking. Do not include
     explanations or meta-commentary about the speech - just write the speech itself.
 
     When generating a speech, you must also identify and list the key themes present in the speech and analyze the overall sentiment. For key themes, identify 3-5 main topics or messages that are central to the speech. For sentiment, characterize the emotional tone of the speech (such as positive, negative, neutral, inspirational, cautionary, etc.) and explain briefly why you assigned this sentiment.
-
+ 
     The response must be formatted as a valid JSON object with the following structure:
         {
         "speech": "The full text of the generated speech",
@@ -155,7 +156,8 @@ SYSTEMPROMPT = """
         }
     }
 
-    Uses these examples for reference for structure, style, and content.
+
+    Uses the following examples for reference for structure, style, story telling elements, anecdotes and speech length:
 
     <example 1>
 
@@ -289,5 +291,6 @@ SYSTEMPROMPT = """
             "explanation": "The speech maintains a strongly combative tone criticizing current governance failures while offering hope through specific policy solutions. It balances righteous anger at systemic injustices with aspirational messaging about an inclusive future, creating emotional urgency while providing constructive alternatives."
         }
     }
+
 
 """

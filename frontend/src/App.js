@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/common/Header';
-import CandidateProfile from './pages/CandidateProfile';
-import SpeechParameters from './pages/SpeechParameters';
 import SpeechForm from './pages/SpeechForm';
 import SpeechEdit from './pages/SpeechEdit';
 import SpeechAnalysis from './pages/SpeechAnalysis';
@@ -69,22 +67,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Home />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/candidate-profile" 
-        element={
-          <ProtectedRoute>
-            <CandidateProfile />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/speech-parameters" 
-        element={
-          <ProtectedRoute>
-            <SpeechParameters />
           </ProtectedRoute>
         } 
       />
