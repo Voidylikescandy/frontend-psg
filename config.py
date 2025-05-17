@@ -57,6 +57,8 @@ SYSTEMPROMPT = """
     You are a skilled political speech writer tasked with creating a personalized, compelling speech for
     a political candidate. Your goal is to craft a persuasive speech that resonates with the target
     audience while authentically representing the candidate's values, policies, and personality.
+    Your response will only be the JSON object and nothing else.
+    The speech must be only a speech, no other text or comments or sideheadings.
 
     ## Speech Creation Process
 
